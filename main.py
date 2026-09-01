@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 
 import gi
@@ -21,10 +20,6 @@ APP_ID = "com.murat.Aether"
 DEFAULT_MODEL = "qwen3:8b"
 
 
-# ============================================================
-# AETHER SYSTEM PROMPT
-# ============================================================
-
 AETHER_SYSTEM_PROMPT = (
     "Sen Aether'sın. "
     "Adın Aether'dır ve kullanıcıyla konuşan yapay zeka "
@@ -38,10 +33,6 @@ AETHER_SYSTEM_PROMPT = (
     "Yanıtlarını doğal, açık ve yardımcı şekilde ver."
 )
 
-
-# ============================================================
-# ÖNERİLEN MODELLER
-# ============================================================
 
 RECOMMENDED_MODELS = [
     ("qwen3:8b", "Genel amaçlı • güçlü"),
@@ -62,7 +53,6 @@ RECOMMENDED_MODELS = [
 class CodeBlock(Gtk.Box):
 
     def __init__(self, code, language=""):
-
         super().__init__(
             orientation=Gtk.Orientation.VERTICAL,
             spacing=6
@@ -85,11 +75,9 @@ class CodeBlock(Gtk.Box):
 
         header.append(language_label)
 
-        copy_button = Gtk.Button(
-            label="Kopyala"
-        )
-
+        copy_button = Gtk.Button(label="Kopyala")
         copy_button.add_css_class("flat")
+
         copy_button.connect(
             "clicked",
             self.copy_code,
@@ -99,9 +87,7 @@ class CodeBlock(Gtk.Box):
         header.append(copy_button)
         self.append(header)
 
-        code_label = Gtk.Label(
-            label=code
-        )
+        code_label = Gtk.Label(label=code)
 
         code_label.set_xalign(0)
         code_label.set_wrap(True)
@@ -112,7 +98,6 @@ class CodeBlock(Gtk.Box):
         self.append(code_label)
 
     def copy_code(self, button, code):
-
         display = Gdk.Display.get_default()
 
         if display is None:
@@ -129,7 +114,6 @@ class CodeBlock(Gtk.Box):
         )
 
     def reset_copy_button(self, button):
-
         button.set_label("Kopyala")
         return False
 
@@ -141,7 +125,6 @@ class CodeBlock(Gtk.Box):
 class MessageBubble(Gtk.Box):
 
     def __init__(self, role, text=""):
-
         super().__init__(
             orientation=Gtk.Orientation.VERTICAL,
             spacing=8
@@ -160,7 +143,6 @@ class MessageBubble(Gtk.Box):
             title = "AETHER"
 
         header = Gtk.Label(label=title)
-
         header.set_xalign(0)
         header.add_css_class("message-role")
 
@@ -177,14 +159,11 @@ class MessageBubble(Gtk.Box):
         self.render(text)
 
     def set_text(self, text):
-
         self.text = text
         self.render(text)
 
     def clear_content(self):
-
         while True:
-
             child = self.content_box.get_first_child()
 
             if child is None:
@@ -193,21 +172,16 @@ class MessageBubble(Gtk.Box):
             self.content_box.remove(child)
 
     def render(self, text):
-
         self.clear_content()
 
         if not text:
-
             label = Gtk.Label(label="...")
             label.set_xalign(0)
-
             self.content_box.append(label)
             return
 
         if self.role == "user":
-
             label = Gtk.Label(label=text)
-
             label.set_xalign(0)
             label.set_wrap(True)
             label.set_selectable(True)
@@ -219,7 +193,6 @@ class MessageBubble(Gtk.Box):
         self.render_markdown(text)
 
     def render_markdown(self, text):
-
         pattern = r"```([^\n]*)\n?(.*?)```"
 
         parts = re.split(
@@ -231,45 +204,32 @@ class MessageBubble(Gtk.Box):
         index = 0
 
         while index < len(parts):
-
             normal_text = parts[index]
 
             if normal_text.strip():
-
-                self.render_markdown_text(
-                    normal_text
-                )
+                self.render_markdown_text(normal_text)
 
             if index + 2 < len(parts):
-
                 language = parts[index + 1].strip()
                 code = parts[index + 2].strip()
 
                 self.content_box.append(
-                    CodeBlock(
-                        code,
-                        language
-                    )
+                    CodeBlock(code, language)
                 )
 
             index += 3
 
     def render_markdown_text(self, text):
-
         for line in text.splitlines():
-
             stripped = line.strip()
 
             if not stripped:
-
                 spacer = Gtk.Box()
                 spacer.set_size_request(-1, 5)
-
                 self.content_box.append(spacer)
                 continue
 
             if stripped.startswith("### "):
-
                 self.append_markdown_label(
                     stripped[4:],
                     "markdown-h3"
@@ -277,7 +237,6 @@ class MessageBubble(Gtk.Box):
                 continue
 
             if stripped.startswith("## "):
-
                 self.append_markdown_label(
                     stripped[3:],
                     "markdown-h2"
@@ -285,18 +244,13 @@ class MessageBubble(Gtk.Box):
                 continue
 
             if stripped.startswith("# "):
-
                 self.append_markdown_label(
                     stripped[2:],
                     "markdown-h1"
                 )
                 continue
 
-            if (
-                stripped.startswith("- ")
-                or stripped.startswith("* ")
-            ):
-
+            if stripped.startswith("- ") or stripped.startswith("* "):
                 self.append_markdown_label(
                     "• " + stripped[2:]
                 )
@@ -308,7 +262,6 @@ class MessageBubble(Gtk.Box):
             )
 
             if numbered:
-
                 self.append_markdown_label(
                     f"{numbered.group(1)}. "
                     f"{numbered.group(2)}"
@@ -316,26 +269,17 @@ class MessageBubble(Gtk.Box):
                 continue
 
             if stripped.startswith("> "):
-
                 label = self.create_markup_label(
                     "❯ " + stripped[2:]
                 )
 
-                label.add_css_class(
-                    "markdown-quote"
-                )
-
+                label.add_css_class("markdown-quote")
                 self.content_box.append(label)
                 continue
 
             self.append_markdown_label(stripped)
 
-    def append_markdown_label(
-        self,
-        text,
-        css_class=None
-    ):
-
+    def append_markdown_label(self, text, css_class=None):
         label = self.create_markup_label(text)
 
         if css_class:
@@ -344,7 +288,6 @@ class MessageBubble(Gtk.Box):
         self.content_box.append(label)
 
     def create_markup_label(self, text):
-
         label = Gtk.Label()
 
         label.set_xalign(0)
@@ -362,7 +305,6 @@ class MessageBubble(Gtk.Box):
         return label
 
     def inline_markup(self, text):
-
         text = (
             text
             .replace("&", "&amp;")
@@ -373,8 +315,7 @@ class MessageBubble(Gtk.Box):
         text = re.sub(
             r"`([^`]+)`",
             (
-                r'<span '
-                r'font_family="monospace" '
+                r'<span font_family="monospace" '
                 r'foreground="#d99a4e">\1</span>'
             ),
             text
@@ -402,7 +343,6 @@ class MessageBubble(Gtk.Box):
 class SettingsWindow(Adw.PreferencesWindow):
 
     def __init__(self, parent):
-
         super().__init__(
             transient_for=parent,
             modal=True,
@@ -560,7 +500,9 @@ class SettingsWindow(Adw.PreferencesWindow):
             label="Adresi Uygula"
         )
 
-        apply_button.add_css_class("suggested-action")
+        apply_button.add_css_class(
+            "suggested-action"
+        )
 
         apply_button.connect(
             "clicked",
@@ -634,30 +576,22 @@ class SettingsWindow(Adw.PreferencesWindow):
         about_group.add(about_row)
 
     def on_thinking_changed(self, row, param):
-
         value = row.get_active()
-
         self.parent_window.thinking = value
         self.parent_window.config.set("thinking", value)
 
     def on_context_changed(self, row, param):
-
         value = int(row.get_value())
-
         self.parent_window.context = value
         self.parent_window.config.set("context", value)
 
     def on_temperature_changed(self, row, param):
-
         value = row.get_value()
-
         self.parent_window.temperature = value
         self.parent_window.config.set("temperature", value)
 
     def on_enter_changed(self, row, param):
-
         value = row.get_active()
-
         self.parent_window.enter_to_send = value
         self.parent_window.config.set("enter_to_send", value)
 
@@ -668,11 +602,9 @@ class SettingsWindow(Adw.PreferencesWindow):
         if selected == 0:
             scheme = Adw.ColorScheme.DEFAULT
             theme = "system"
-
         elif selected == 1:
             scheme = Adw.ColorScheme.FORCE_LIGHT
             theme = "light"
-
         else:
             scheme = Adw.ColorScheme.FORCE_DARK
             theme = "dark"
@@ -709,12 +641,7 @@ class SettingsWindow(Adw.PreferencesWindow):
 
 class RenameChatWindow(Gtk.Window):
 
-    def __init__(
-        self,
-        parent,
-        chat_id,
-        current_title
-    ):
+    def __init__(self, parent, chat_id, current_title):
 
         super().__init__(
             transient_for=parent,
@@ -740,11 +667,11 @@ class RenameChatWindow(Gtk.Window):
         self.set_child(box)
 
         label = Gtk.Label(label="Sohbet adı")
-
         label.set_xalign(0)
         box.append(label)
 
         self.entry = Gtk.Entry()
+
         self.entry.set_text(current_title)
         self.entry.set_hexpand(True)
 
@@ -772,6 +699,7 @@ class RenameChatWindow(Gtk.Window):
         save.connect("clicked", self.save)
 
         buttons.append(save)
+
         box.append(buttons)
 
         self.entry.connect(
@@ -797,7 +725,6 @@ class RenameChatWindow(Gtk.Window):
         )
 
         if self.parent_window.current_chat_id == self.chat_id:
-
             self.parent_window.chat_title.set_text(title)
 
         self.close()
@@ -837,9 +764,9 @@ class ModelPullWindow(Gtk.Window):
         self.set_child(root)
 
         title = Gtk.Label(label="Model İndir")
-
         title.set_xalign(0)
         title.add_css_class("heading")
+
         root.append(title)
 
         subtitle = Gtk.Label(
@@ -851,6 +778,7 @@ class ModelPullWindow(Gtk.Window):
 
         subtitle.set_xalign(0)
         subtitle.set_wrap(True)
+
         root.append(subtitle)
 
         self.search = Gtk.SearchEntry()
@@ -873,6 +801,7 @@ class ModelPullWindow(Gtk.Window):
         )
 
         self.entry.set_hexpand(True)
+
         root.append(self.entry)
 
         recommended_title = Gtk.Label(
@@ -934,7 +863,9 @@ class ModelPullWindow(Gtk.Window):
 
         self.download_button = Gtk.Button(label="İndir")
 
-        self.download_button.add_css_class("suggested-action")
+        self.download_button.add_css_class(
+            "suggested-action"
+        )
 
         self.download_button.connect(
             "clicked",
@@ -960,7 +891,6 @@ class ModelPullWindow(Gtk.Window):
         self.recommended_rows.clear()
 
         while True:
-
             child = self.recommended_box.get_first_child()
 
             if child is None:
@@ -975,7 +905,9 @@ class ModelPullWindow(Gtk.Window):
                 spacing=8
             )
 
-            row.add_css_class("model-recommendation")
+            row.add_css_class(
+                "model-recommendation"
+            )
 
             text_box = Gtk.Box(
                 orientation=Gtk.Orientation.VERTICAL,
@@ -985,7 +917,6 @@ class ModelPullWindow(Gtk.Window):
             text_box.set_hexpand(True)
 
             name = Gtk.Label(label=model_name)
-
             name.set_xalign(0)
             name.add_css_class("model-name")
 
@@ -997,10 +928,10 @@ class ModelPullWindow(Gtk.Window):
             desc.add_css_class("dim-label")
 
             text_box.append(desc)
+
             row.append(text_box)
 
             select = Gtk.Button(label="Seç")
-
             select.add_css_class("flat")
 
             select.connect(
@@ -1010,15 +941,14 @@ class ModelPullWindow(Gtk.Window):
             )
 
             row.append(select)
+
             self.recommended_box.append(row)
 
-            self.recommended_rows.append(
-                {
-                    "row": row,
-                    "name": model_name,
-                    "description": description
-                }
-            )
+            self.recommended_rows.append({
+                "row": row,
+                "name": model_name,
+                "description": description
+            })
 
     def select_recommended(self, button, model_name):
 
@@ -1028,11 +958,7 @@ class ModelPullWindow(Gtk.Window):
 
     def filter_recommended(self, entry):
 
-        query = (
-            entry.get_text()
-            .strip()
-            .lower()
-        )
+        query = entry.get_text().strip().lower()
 
         for item in self.recommended_rows:
 
@@ -1048,7 +974,7 @@ class ModelPullWindow(Gtk.Window):
 
             exact = next(
                 (
-                    item["name"]
+                    item[0]
                     for item in RECOMMENDED_MODELS
                     if item[0].lower() == query
                 ),
@@ -1171,7 +1097,6 @@ class ModelPullWindow(Gtk.Window):
             )
 
         else:
-
             self.progress.pulse()
 
         if status_text:
@@ -1250,11 +1175,16 @@ class LocalAIWindow(Adw.ApplicationWindow):
     def __init__(self, app):
 
         super().__init__(
-            application=app,
-            title="Aether"
+            application=app
         )
 
+        self.set_title("Aether")
         self.set_default_size(1150, 780)
+        self.set_resizable(True)
+
+        # ====================================================
+        # CONFIG
+        # ====================================================
 
         self.config = Config()
 
@@ -1281,7 +1211,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
             or DEFAULT_MODEL
         )
 
-        ollama_url = self.config.get("ollama_url")
+        ollama_url = self.config.get(
+            "ollama_url"
+        )
 
         self.client = OllamaClient(
             base_url=ollama_url
@@ -1294,7 +1226,6 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         self.generating = False
         self.stop_event = None
-
         self.generation_started = 0.0
 
         self.last_stats = {
@@ -1316,11 +1247,14 @@ class LocalAIWindow(Adw.ApplicationWindow):
         self.search_text = ""
 
         self.apply_theme()
-
         self.load_css()
         self.build_ui()
         self.load_chat_history()
         self.check_ollama()
+
+    # ========================================================
+    # THEME
+    # ========================================================
 
     def apply_theme(self):
 
@@ -1343,6 +1277,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
             manager.set_color_scheme(
                 Adw.ColorScheme.DEFAULT
             )
+
+    # ========================================================
+    # CSS
+    # ========================================================
 
     def load_css(self):
 
@@ -1378,7 +1316,74 @@ class LocalAIWindow(Adw.ApplicationWindow):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
+    # ========================================================
+    # UI
+    # ========================================================
+
     def build_ui(self):
+
+        # ====================================================
+        # AETHER WINDOW STRUCTURE
+        #
+        # ÖNEMLİ:
+        # Adw.ApplicationWindow'da set_titlebar() KULLANMIYORUZ.
+        #
+        # Doğru yapı:
+        #
+        # Adw.ApplicationWindow
+        #   └── Adw.ToolbarView
+        #        ├── Adw.HeaderBar
+        #        └── content
+        #
+        # Libadwaita'nın önerdiği yapı budur.
+        # ====================================================
+
+        toolbar_view = Adw.ToolbarView()
+
+        self.set_content(
+            toolbar_view
+        )
+
+        # ====================================================
+        # GERÇEK WINDOW HEADER BAR
+        # ====================================================
+
+        titlebar = Adw.HeaderBar()
+
+        titlebar.set_show_start_title_buttons(True)
+        titlebar.set_show_end_title_buttons(True)
+
+        # Sistem pencere düğmelerinin yerleşimini açıkça belirle.
+        #
+        # GNOME:
+        # minimize / maximize / close
+        #
+        # Cinnamon / diğer WM:
+        # WM'nin desteklediği düğmeler gösterilir.
+        #
+        titlebar.set_decoration_layout(
+            "icon:minimize,maximize,close"
+        )
+
+        title_widget = Gtk.Label(
+            label="Aether"
+        )
+
+        title_widget.add_css_class(
+            "window-title"
+        )
+
+        titlebar.set_title_widget(
+            title_widget
+        )
+
+        toolbar_view.add_top_bar(
+            titlebar
+        )
+
+        # ====================================================
+        # MAIN BOX
+        # ====================================================
 
         main_box = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL
@@ -1387,14 +1392,23 @@ class LocalAIWindow(Adw.ApplicationWindow):
         main_box.set_hexpand(True)
         main_box.set_vexpand(True)
 
-        self.set_content(main_box)
+        toolbar_view.set_content(
+            main_box
+        )
+
+        # ====================================================
+        # SIDEBAR
+        # ====================================================
 
         sidebar = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL,
             spacing=10
         )
 
-        sidebar.set_size_request(270, -1)
+        sidebar.set_size_request(
+            270,
+            -1
+        )
 
         sidebar.set_margin_top(16)
         sidebar.set_margin_bottom(16)
@@ -1405,7 +1419,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         main_box.append(sidebar)
 
-        title = Gtk.Label(label="AETHER")
+        title = Gtk.Label(
+            label="AETHER"
+        )
 
         title.set_xalign(0)
         title.add_css_class("app-title")
@@ -1416,7 +1432,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
             label="+  Yeni Sohbet"
         )
 
-        new_chat_button.add_css_class("suggested-action")
+        new_chat_button.add_css_class(
+            "suggested-action"
+        )
 
         new_chat_button.connect(
             "clicked",
@@ -1461,9 +1479,13 @@ class LocalAIWindow(Adw.ApplicationWindow):
             spacing=4
         )
 
-        history_scroll.set_child(self.history_box)
+        history_scroll.set_child(
+            self.history_box
+        )
 
-        model_title = Gtk.Label(label="MODEL")
+        model_title = Gtk.Label(
+            label="MODEL"
+        )
 
         model_title.set_xalign(0)
         model_title.add_css_class("section-title")
@@ -1475,8 +1497,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
             spacing=6
         )
 
-        self.model_dropdown = Gtk.DropDown.new_from_strings(
-            [self.selected_model]
+        self.model_dropdown = (
+            Gtk.DropDown.new_from_strings(
+                [self.selected_model]
+            )
         )
 
         self.model_dropdown.set_hexpand(True)
@@ -1486,9 +1510,13 @@ class LocalAIWindow(Adw.ApplicationWindow):
             self.on_model_changed
         )
 
-        model_row.append(self.model_dropdown)
+        model_row.append(
+            self.model_dropdown
+        )
 
-        refresh_models = Gtk.Button(label="↻")
+        refresh_models = Gtk.Button(
+            label="↻"
+        )
 
         refresh_models.set_tooltip_text(
             "Modelleri yenile"
@@ -1551,6 +1579,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         sidebar.append(self.status_label)
 
+        # ====================================================
+        # CHAT AREA
+        # ====================================================
+
         chat_area = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL
         )
@@ -1582,7 +1614,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         header.append(self.chat_title)
 
-        self.stats_button = Gtk.Button(label="Hazır")
+        self.stats_button = Gtk.Button(
+            label="Hazır"
+        )
 
         self.stats_button.add_css_class("flat")
 
@@ -1614,9 +1648,15 @@ class LocalAIWindow(Adw.ApplicationWindow):
         self.messages_box.set_margin_start(30)
         self.messages_box.set_margin_end(30)
 
-        self.scroll.set_child(self.messages_box)
+        self.scroll.set_child(
+            self.messages_box
+        )
 
         self.show_welcome()
+
+        # ====================================================
+        # INPUT
+        # ====================================================
 
         input_area = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL,
@@ -1645,7 +1685,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         self.entry = Gtk.TextView()
 
-        self.entry.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+        self.entry.set_wrap_mode(
+            Gtk.WrapMode.WORD_CHAR
+        )
+
         self.entry.set_hexpand(True)
 
         self.entry.set_top_margin(10)
@@ -1655,7 +1698,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         self.entry.add_css_class("chat-input")
 
-        self.entry_scroll.set_child(self.entry)
+        self.entry_scroll.set_child(
+            self.entry
+        )
 
         key_controller = Gtk.EventControllerKey()
 
@@ -1664,12 +1709,21 @@ class LocalAIWindow(Adw.ApplicationWindow):
             self.on_input_key_pressed
         )
 
-        self.entry.add_controller(key_controller)
+        self.entry.add_controller(
+            key_controller
+        )
 
-        self.send_button = Gtk.Button(label="➤")
+        self.send_button = Gtk.Button(
+            label="➤"
+        )
 
-        self.send_button.set_tooltip_text("Gönder")
-        self.send_button.add_css_class("suggested-action")
+        self.send_button.set_tooltip_text(
+            "Gönder"
+        )
+
+        self.send_button.add_css_class(
+            "suggested-action"
+        )
 
         self.send_button.connect(
             "clicked",
@@ -1678,7 +1732,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         input_area.append(self.send_button)
 
-        self.stop_button = Gtk.Button(label="■")
+        self.stop_button = Gtk.Button(
+            label="■"
+        )
 
         self.stop_button.set_tooltip_text(
             "Üretimi durdur"
@@ -1692,6 +1748,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
         )
 
         input_area.append(self.stop_button)
+
+    # ========================================================
+    # SETTINGS
+    # ========================================================
 
     def open_settings(self, button):
 
@@ -1714,7 +1774,12 @@ class LocalAIWindow(Adw.ApplicationWindow):
     def on_settings_closed(self, window):
 
         self.settings_window = None
+
         return False
+
+    # ========================================================
+    # MODEL PULL
+    # ========================================================
 
     def open_model_pull(self, button):
 
@@ -1740,7 +1805,12 @@ class LocalAIWindow(Adw.ApplicationWindow):
     def on_pull_closed(self, window):
 
         self.pull_window = None
+
         return False
+
+    # ========================================================
+    # INPUT
+    # ========================================================
 
     def on_input_key_pressed(
         self,
@@ -1751,15 +1821,13 @@ class LocalAIWindow(Adw.ApplicationWindow):
     ):
 
         shift_pressed = bool(
-            state &
-            Gdk.ModifierType.SHIFT_MASK
+            state & Gdk.ModifierType.SHIFT_MASK
         )
 
         if (
             keyval == Gdk.KEY_Return
             and shift_pressed
         ):
-
             return False
 
         if (
@@ -1789,7 +1857,14 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
     def clear_input(self):
 
-        self.entry.get_buffer().set_text("", 0)
+        self.entry.get_buffer().set_text(
+            "",
+            0
+        )
+
+    # ========================================================
+    # SEARCH
+    # ========================================================
 
     def on_search_changed(self, entry):
 
@@ -1814,6 +1889,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
             data["row"].set_visible(visible)
 
+    # ========================================================
+    # MODELS
+    # ========================================================
+
     def get_model(self):
 
         item = (
@@ -1824,7 +1903,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
         if item:
             return item.get_string()
 
-        return self.selected_model or DEFAULT_MODEL
+        return (
+            self.selected_model
+            or DEFAULT_MODEL
+        )
 
     def refresh_models(self, button):
 
@@ -1870,27 +1952,33 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         if not names:
             names = [
-                self.selected_model or DEFAULT_MODEL
+                self.selected_model
+                or DEFAULT_MODEL
             ]
 
         if self.selected_model in names:
+
             preferred = names.index(
                 self.selected_model
             )
 
         elif DEFAULT_MODEL in names:
+
             preferred = names.index(
                 DEFAULT_MODEL
             )
 
         else:
+
             preferred = 0
 
         self.model_dropdown.set_model(
             Gtk.StringList.new(names)
         )
 
-        self.model_dropdown.set_selected(preferred)
+        self.model_dropdown.set_selected(
+            preferred
+        )
 
         self.selected_model = names[preferred]
 
@@ -1964,7 +2052,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
             ""
         )
 
-        family = details.get("family", "")
+        family = details.get(
+            "family",
+            ""
+        )
 
         if parameter_size:
             info += f"\nParametre: {parameter_size}"
@@ -1978,6 +2069,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
         info += f"\nBoyut: {size_text}"
 
         self.model_info.set_text(info)
+
+    # ========================================================
+    # STATS
+    # ========================================================
 
     def show_stats(self, button):
 
@@ -2059,19 +2154,31 @@ class LocalAIWindow(Adw.ApplicationWindow):
         )
 
         prompt_tokens = int(
-            data.get("prompt_eval_count", 0) or 0
+            data.get(
+                "prompt_eval_count",
+                0
+            ) or 0
         )
 
         output_tokens = int(
-            data.get("eval_count", 0) or 0
+            data.get(
+                "eval_count",
+                0
+            ) or 0
         )
 
         prompt_duration = int(
-            data.get("prompt_eval_duration", 0) or 0
+            data.get(
+                "prompt_eval_duration",
+                0
+            ) or 0
         )
 
         eval_duration = int(
-            data.get("eval_duration", 0) or 0
+            data.get(
+                "eval_duration",
+                0
+            ) or 0
         )
 
         if prompt_duration > 0:
@@ -2106,7 +2213,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
             generation_speed = 0.0
 
-        total_tokens = prompt_tokens + output_tokens
+        total_tokens = (
+            prompt_tokens
+            + output_tokens
+        )
 
         self.last_stats = {
             "elapsed": elapsed,
@@ -2122,6 +2232,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
             f"{generation_speed:.1f} tok/s • "
             f"{elapsed:.1f}s"
         )
+
+    # ========================================================
+    # WELCOME
+    # ========================================================
 
     def show_welcome(self):
 
@@ -2147,6 +2261,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
         welcome.add_css_class("welcome")
 
         self.messages_box.append(welcome)
+
+    # ========================================================
+    # OLLAMA
+    # ========================================================
 
     def check_ollama(self):
 
@@ -2183,9 +2301,15 @@ class LocalAIWindow(Adw.ApplicationWindow):
             "Ollama çalışmıyor"
         )
 
-        print(f"Ollama hatası: {error}")
+        print(
+            f"Ollama hatası: {error}"
+        )
 
         return False
+
+    # ========================================================
+    # CHAT HISTORY
+    # ========================================================
 
     def load_chat_history(self):
 
@@ -2198,11 +2322,7 @@ class LocalAIWindow(Adw.ApplicationWindow):
                 title
             )
 
-    def add_history_item(
-        self,
-        chat_id,
-        title
-    ):
+    def add_history_item(self, chat_id, title):
 
         row = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL,
@@ -2211,7 +2331,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         row.add_css_class("history-row")
 
-        select_button = Gtk.Button(label=title)
+        select_button = Gtk.Button(
+            label=title
+        )
 
         select_button.set_hexpand(True)
         select_button.set_halign(Gtk.Align.FILL)
@@ -2224,7 +2346,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         row.append(select_button)
 
-        rename_button = Gtk.Button(label="✎")
+        rename_button = Gtk.Button(
+            label="✎"
+        )
 
         rename_button.set_tooltip_text(
             "Yeniden adlandır"
@@ -2240,7 +2364,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         row.append(rename_button)
 
-        delete_button = Gtk.Button(label="×")
+        delete_button = Gtk.Button(
+            label="×"
+        )
 
         delete_button.set_tooltip_text(
             "Sohbeti sil"
@@ -2279,6 +2405,7 @@ class LocalAIWindow(Adw.ApplicationWindow):
             return
 
         data["title"] = title
+
         data["button"].set_label(title)
 
         self.filter_history()
@@ -2289,11 +2416,15 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
             if chat_id == self.current_chat_id:
 
-                data["row"].add_css_class("active-chat")
+                data["row"].add_css_class(
+                    "active-chat"
+                )
 
             else:
 
-                data["row"].remove_css_class("active-chat")
+                data["row"].remove_css_class(
+                    "active-chat"
+                )
 
     def refresh_history(self):
 
@@ -2311,11 +2442,11 @@ class LocalAIWindow(Adw.ApplicationWindow):
         self.load_chat_history()
         self.filter_history()
 
-    def rename_chat(
-        self,
-        button,
-        chat_id
-    ):
+    # ========================================================
+    # CHAT ACTIONS
+    # ========================================================
+
+    def rename_chat(self, button, chat_id):
 
         if self.generating:
             return
@@ -2333,16 +2464,14 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         self.rename_window.present()
 
-    def load_chat(
-        self,
-        button,
-        chat_id
-    ):
+    def load_chat(self, button, chat_id):
 
         if self.generating:
             return
 
-        messages = self.database.get_messages(chat_id)
+        messages = self.database.get_messages(
+            chat_id
+        )
 
         self.current_chat_id = chat_id
 
@@ -2393,25 +2522,33 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         self.history_box.remove(row)
 
-        self.chat_rows.pop(chat_id, None)
+        self.chat_rows.pop(
+            chat_id,
+            None
+        )
 
         if self.current_chat_id == chat_id:
 
             self.current_chat_id = None
             self.messages.clear()
 
-            self.chat_title.set_text("Yeni Sohbet")
-            self.stats_button.set_label("Hazır")
+            self.chat_title.set_text(
+                "Yeni Sohbet"
+            )
+
+            self.stats_button.set_label(
+                "Hazır"
+            )
 
             self.show_welcome()
 
         self.update_active_chat_style()
 
-    def add_message(
-        self,
-        role,
-        text
-    ):
+    # ========================================================
+    # MESSAGES
+    # ========================================================
+
+    def add_message(self, role, text):
 
         bubble = MessageBubble(
             role,
@@ -2422,15 +2559,19 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         return bubble
 
-    def send_message(
-        self,
-        widget
-    ):
+    # ========================================================
+    # SEND
+    # ========================================================
+
+    def send_message(self, widget):
 
         if self.generating:
             return
 
-        text = self.get_input_text().strip()
+        text = (
+            self.get_input_text()
+            .strip()
+        )
 
         if not text:
             return
@@ -2445,7 +2586,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
                 title += "..."
 
             self.current_chat_id = (
-                self.database.create_chat(title)
+                self.database.create_chat(
+                    title
+                )
             )
 
             self.chat_title.set_text(title)
@@ -2485,23 +2628,21 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         self.generating = True
         self.stop_event = threading.Event()
+
         self.generation_started = time.monotonic()
 
         self.send_button.set_sensitive(False)
         self.stop_button.set_sensitive(True)
         self.entry.set_sensitive(False)
 
-        self.stats_button.set_label("Üretiliyor...")
+        self.stats_button.set_label(
+            "Üretiliyor..."
+        )
 
         model = self.get_model()
-
         context = self.context
         temperature = self.temperature
         thinking = self.thinking
-
-        # ====================================================
-        # AETHER KİMLİĞİ
-        # ====================================================
 
         messages_for_model = [
             {
@@ -2543,6 +2684,10 @@ class LocalAIWindow(Adw.ApplicationWindow):
             daemon=True
         ).start()
 
+    # ========================================================
+    # RESPONSE
+    # ========================================================
+
     def update_response(
         self,
         bubble,
@@ -2556,7 +2701,9 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
             state["text"] += chunk
 
-            bubble.set_text(state["text"])
+            bubble.set_text(
+                state["text"]
+            )
 
             if self.messages:
 
@@ -2588,10 +2735,11 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         return False
 
-    def stop_generation(
-        self,
-        button
-    ):
+    # ========================================================
+    # STOP
+    # ========================================================
+
+    def stop_generation(self, button):
 
         if not self.generating:
             return
@@ -2607,8 +2755,7 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         elapsed = (
             time.monotonic()
-            -
-            self.generation_started
+            - self.generation_started
         )
 
         self.stats_button.set_label(
@@ -2617,23 +2764,31 @@ class LocalAIWindow(Adw.ApplicationWindow):
 
         self.entry.grab_focus()
 
-    def new_chat(
-        self,
-        button
-    ):
+    # ========================================================
+    # NEW CHAT
+    # ========================================================
+
+    def new_chat(self, button):
 
         if self.generating:
             return
 
         self.current_chat_id = None
+
         self.messages.clear()
 
-        self.chat_title.set_text("Yeni Sohbet")
-        self.stats_button.set_label("Hazır")
+        self.chat_title.set_text(
+            "Yeni Sohbet"
+        )
+
+        self.stats_button.set_label(
+            "Hazır"
+        )
 
         self.update_active_chat_style()
 
         self.show_welcome()
+
         self.clear_input()
 
         self.entry.set_sensitive(True)
@@ -2674,7 +2829,8 @@ class LocalAIApplication(Adw.Application):
     def __init__(self):
 
         super().__init__(
-            application_id=APP_ID
+            application_id=APP_ID,
+            flags=0
         )
 
     def do_activate(self):
@@ -2688,6 +2844,10 @@ class LocalAIApplication(Adw.Application):
         window.present()
 
 
+# ============================================================
+# MAIN
+# ============================================================
+
 def main():
 
     app = LocalAIApplication()
@@ -2696,7 +2856,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()
-
-

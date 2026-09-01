@@ -1,4 +1,4 @@
-```css
+
 * {
     font-family: "JetBrains Mono", monospace;
 }
@@ -303,5 +303,34 @@ label {
     padding-left: 12px;
     padding-right: 12px;
 }
-```
+
+/* ================================
+   WINDOW HEADER BAR
+   ================================ */
+
+headerbar {
+    background: #111315;
+    color: #e9e6de;
+    min-height: 42px;
+}
+
+headerbar title {
+    color: #e9e6de;
+    font-weight: 600;
+}
+
+headerbar button {
+    min-height: 32px;
+    min-width: 32px;
+    border-radius: 8px;
+}
+
+headerbar button:hover {
+    background: #24272b;
+}
+
+headerbar button.close:hover {
+    background: #c94c4c;
+    color: #ffffff;
+}
 
