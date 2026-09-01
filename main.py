@@ -2704,7 +2704,7 @@ class LocalAIWindow(
 
         welcome = Gtk.Label(
             label=(
-                "Aether'ya hoş geldin.\n\n"
+                "Aether'a hoş geldin.\n\n"
                 "Yerel modellerle sohbet etmeye "
                 "hazırsın."
             )
