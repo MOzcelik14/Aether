@@ -62,6 +62,20 @@ Uygulamayı başlatmak için terminale aşağıdaki komutu girin:
 **GTK hatası alıyorsanız:**
 `sudo apt install --reinstall python3-gi gir1.2-gtk-4.0 gir1.2-adw-1`
 
+## Galeri
+
+<p align="center">
+  <img src="assets/1.png" alt="Aether ekran görüntüsü 1" width="800">
+</p>
+
+<p align="center">
+  <img src="assets/2.png" alt="Aether ekran görüntüsü 2" width="800">
+</p>
+
+<p align="center">
+  <img src="assets/3.png" alt="Aether ekran görüntüsü 3" width="800">
+</p>
+
 ## Katkıda Bulunma
 
 Projeye katkıda bulunmak isterseniz, lütfen bir Issue açın veya Pull Request gönderin. 
