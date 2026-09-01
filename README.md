@@ -6,44 +6,55 @@
 
 ---
 
-## ✨ Özellikler
+## Özellikler
 
-- 💬 **Sohbet arayüzü**
-- 📦 **Model yönetimi**
-- ⚙️ **Model ayarları** (sıcaklık, token vb.)
-- 🎨 **Modern GTK4/Libadwaita arayüz**
-- 🔒 **Tamamen yerel ve gizli**
-- ⚡ **Hafif ve hızlı**
+- **Sohbet arayüzü**
+- **Model yönetimi**
+- **Model ayarları** (sıcaklık, token vb.)
+- **Modern GTK4/Libadwaita arayüz**
+- **Tamamen yerel ve gizli**
+- **Hafif ve hızlı**
 
-## 📋 Gereksinimler
+## Gereksinimler
 
 - Linux (Debian tabanlı herhangi bir dağıtım)
 - Python 3.10+
 - GTK 4.0+
 - Ollama
 
-## 🚀 Kurulum
+## Kurulum
 
-### Tek Satır Kurulum
+### Basit Kurulum
 
-`curl -fsSL https://raw.githubusercontent.com/MOzcelik14/Aether/main/install.sh | bash`
+```bash
+curl -fsSL https://raw.githubusercontent.com/MOzcelik14/Aether/main/install.sh | bash
+```
 
 ### Manuel Kurulum
 
-```
+```bash
 git clone https://github.com/MOzcelik14/Aether.git
 cd Aether
 chmod +x install.sh
 ./install.sh
 ```
 
-## 💻 Kullanım
+
+### Güncelleme
+
+Kurulum betiğini kullanarak uygulamayı güncelleyebilirsiniz.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/MOzcelik14/Aether/main/install.sh | bash
+```
+
+## Kullanım
 
 Uygulamayı başlatmak için terminale aşağıdaki komutu girin:
 
 `aether`
 
-## 🛠️ Sorun Giderme
+## Sorun Giderme
 
 **Ollama bağlanmıyorsa:**
 `sudo systemctl start ollama`
@@ -51,14 +62,14 @@ Uygulamayı başlatmak için terminale aşağıdaki komutu girin:
 **GTK hatası alıyorsanız:**
 `sudo apt install --reinstall python3-gi gir1.2-gtk-4.0 gir1.2-adw-1`
 
-## 🤝 Katkıda Bulunma
+## Katkıda Bulunma
 
 Projeye katkıda bulunmak isterseniz, lütfen bir Issue açın veya Pull Request gönderin. 
 
-## 📄 Lisans
+## Lisans
 
 Bu proje **MIT** lisansı ile lisanslanmıştır.
 
-## 🙏 Teşekkürler
+## Teşekkürler
 
-Aether'i beğendiyseniz ve geliştirmeme destek olmak isterseniz repoya ⭐ **yıldız vermeyi** unutmayın!
+Aether'i beğendiyseniz ve geliştirmeme destek olmak isterseniz repoya **yıldız vermeyi** unutmayın!
