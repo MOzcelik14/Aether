@@ -1,0 +1,307 @@
+```css
+* {
+    font-family: "JetBrains Mono", monospace;
+}
+
+window {
+    background: #15171a;
+    color: #e9e6de;
+}
+
+/* ================================
+   SIDEBAR
+   ================================ */
+
+.sidebar {
+    background: #111315;
+    border-radius: 16px;
+    padding: 12px;
+}
+
+.app-title {
+    color: #d99a4e;
+    font-size: 21px;
+    font-weight: 700;
+    margin: 4px 4px 14px 4px;
+}
+
+.section-title {
+    color: #777a80;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    margin: 12px 4px 5px 4px;
+}
+
+/* ================================
+   BUTTONS
+   ================================ */
+
+button {
+    min-height: 38px;
+    border-radius: 9px;
+}
+
+button.suggested-action {
+    background: #d99a4e;
+    color: #15171a;
+    font-weight: 700;
+}
+
+button.suggested-action:hover {
+    background: #e3a65a;
+}
+
+button.flat {
+    background: transparent;
+    color: #d99a4e;
+}
+
+button.flat:hover {
+    background: #24272b;
+}
+
+/* ================================
+   HISTORY
+   ================================ */
+
+.history-row {
+    margin: 2px 0;
+}
+
+.history-row button {
+    min-height: 36px;
+    background: transparent;
+    color: #c9c5bb;
+}
+
+.history-row button:hover {
+    background: #1c1f23;
+}
+
+/* ================================
+   MODEL
+   ================================ */
+
+.model-info {
+    background: #1a1d21;
+    border: 1px solid #2a2e33;
+    border-radius: 9px;
+
+    padding: 10px;
+    margin: 3px 0;
+
+    color: #929087;
+    font-size: 11px;
+}
+
+dropdown {
+    min-height: 40px;
+}
+
+/* ================================
+   CHAT HEADER
+   ================================ */
+
+.chat-title {
+    color: #e9e6de;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.chat-area {
+    background: #15171a;
+}
+
+/* ================================
+   MESSAGES
+   ================================ */
+
+.user-message,
+.assistant-message {
+    border-radius: 12px;
+    padding: 14px 16px;
+
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+/* USER → SAĞ */
+.user-message {
+    background: #23272c;
+
+    margin-left: 180px;
+    margin-right: 0;
+}
+
+/* ASSISTANT → SOL */
+.assistant-message {
+    background: #191c20;
+
+    border-left: 3px solid #d99a4e;
+
+    margin-left: 0;
+    margin-right: 180px;
+}
+
+.message-role {
+    color: #d99a4e;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.8px;
+}
+
+.user-message label,
+.assistant-message label {
+    color: #e9e6de;
+
+    font-size: 13px;
+}
+
+/* ================================
+   MARKDOWN
+   ================================ */
+
+.markdown-h1 {
+    color: #d99a4e;
+    font-size: 20px;
+    font-weight: 700;
+
+    margin-top: 8px;
+    margin-bottom: 7px;
+}
+
+.markdown-h2 {
+    color: #e9e6de;
+    font-size: 17px;
+    font-weight: 700;
+
+    margin-top: 7px;
+    margin-bottom: 5px;
+}
+
+.markdown-h3 {
+    color: #e9e6de;
+    font-size: 15px;
+    font-weight: 700;
+
+    margin-top: 6px;
+    margin-bottom: 4px;
+}
+
+.markdown-quote {
+    color: #99958c;
+    font-style: italic;
+
+    border-left: 3px solid #d99a4e;
+    padding-left: 8px;
+}
+
+/* ================================
+   CODE
+   ================================ */
+
+.code-block {
+    background: #0e1012;
+
+    border: 1px solid #2d3136;
+    border-radius: 10px;
+
+    padding: 10px;
+
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.code-language {
+    color: #8f8c84;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.code-text {
+    background: #111315;
+
+    color: #e9e6de;
+
+    border-radius: 7px;
+
+    padding: 11px;
+
+    font-size: 12px;
+}
+
+/* ================================
+   INPUT
+   ================================ */
+
+.chat-input {
+    background: #202327;
+
+    color: #e9e6de;
+
+    border: 1px solid #30343a;
+    border-radius: 12px;
+
+    font-size: 13px;
+}
+
+.chat-input:focus {
+    border-color: #d99a4e;
+}
+
+/* ================================
+   SCROLLBAR
+   ================================ */
+
+scrollbar slider {
+    background: #41464c;
+    border-radius: 10px;
+}
+
+scrollbar slider:hover {
+    background: #575d64;
+}
+
+/* ================================
+   SEPARATOR
+   ================================ */
+
+separator {
+    background: #292d31;
+
+    margin: 5px 0;
+}
+
+/* ================================
+   GENERAL
+   ================================ */
+
+label {
+    color: #e9e6de;
+}
+
+.dim-label {
+    color: #777a80;
+}
+
+.welcome {
+    color: #777a80;
+    font-size: 14px;
+}
+
+/* ================================
+   INPUT CONTAINER
+   ================================ */
+
+.chat-input {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+```
+
