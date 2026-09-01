@@ -670,13 +670,13 @@ class SettingsWindow(Adw.PreferencesWindow):
         self.add(about_page)
 
         about_group = Adw.PreferencesGroup(
-            title="Local AI"
+            title="Aether"
         )
 
         about_page.add(about_group)
 
         about_row = Adw.ActionRow(
-            title="Local AI",
+            title="Aether",
             subtitle="Ollama için yerel masaüstü istemcisi"
         )
 
@@ -1507,7 +1507,7 @@ class LocalAIWindow(
 
         super().__init__(
             application=app,
-            title="Local AI"
+            title="Aether"
         )
 
         self.set_default_size(
@@ -2704,7 +2704,7 @@ class LocalAIWindow(
 
         welcome = Gtk.Label(
             label=(
-                "Local AI'ya hoş geldin.\n\n"
+                "Aether'ya hoş geldin.\n\n"
                 "Yerel modellerle sohbet etmeye "
                 "hazırsın."
             )
