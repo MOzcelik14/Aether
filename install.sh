@@ -34,7 +34,10 @@ WARN="${YELLOW}⚠${RESET}"
 # ============================================================
 
 hr() {
-    printf "${GRAY}%*s${RESET}\n" "${1:-63}" '' | tr ' ' '─'
+    local width="${1:-63}"
+    printf "${GRAY}"
+    printf '─%.0s' $(seq 1 "$width")
+    printf "${RESET}\n"
 }
 
 banner() {
@@ -95,17 +98,17 @@ run_spinner() {
     tput civis 2>/dev/null || true
     while kill -0 "$pid" 2>/dev/null; do
         i=$(( (i + 1) % ${#frames} ))
-        printf "\r  ${CYAN}%s${RESET} %s" "${frames:$i:1}" "$msg"
+        printf "\r\033[K  ${CYAN}%s${RESET} %s" "${frames:$i:1}" "$msg"
         sleep 0.1
     done
     tput cnorm 2>/dev/null || true
 
     if wait "$pid"; then
-        printf "\r  ${CHECK} %s\n" "$msg"
+        printf "\r\033[K  ${CHECK} %s\n" "$msg"
         rm -f "$logfile"
         return 0
     else
-        printf "\r  ${CROSS} ${RED}%s${RESET}\n" "$msg"
+        printf "\r\033[K  ${CROSS} ${RED}%s${RESET}\n" "$msg"
         echo -e "${DIM}"
         tail -n 20 "$logfile"
         echo -e "${RESET}"
@@ -120,9 +123,9 @@ progress_bar() {
     local filled=$(( current * width / total ))
     local empty=$(( width - filled ))
 
-    printf "\r  ${CYAN}["
-    printf "%${filled}s" '' | tr ' ' '█'
-    printf "%${empty}s" '' | tr ' ' '░'
+    printf "\r\033[K  ${CYAN}["
+    [ "$filled" -gt 0 ] && printf '█%.0s' $(seq 1 "$filled")
+    [ "$empty" -gt 0 ] && printf '░%.0s' $(seq 1 "$empty")
     printf "]${RESET} %s" "$label"
 
     if [ "$current" -eq "$total" ]; then
