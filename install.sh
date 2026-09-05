@@ -339,7 +339,7 @@ fi
 section "Aether Paketleniyor"
 
 APP_NAME="aether"
-VERSION="0.1.0"
+VERSION="0.1.0.$(date +%Y%m%d%H%M%S)"
 ARCH="all"
 
 BUILD_DIR="$TMP_DIR/dist"
@@ -407,7 +407,7 @@ if [ ! -s "$DEB_FILE" ]; then
     fail ".deb paketi oluşturulamadı."
 fi
 
-run_spinner "Aether kuruluyor" sudo apt install -y "$DEB_FILE" \
+run_spinner "Aether kuruluyor" sudo apt install --reinstall -y "$DEB_FILE" \
     || fail "Aether kurulamadı."
 
 # ============================================================
