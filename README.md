@@ -14,17 +14,21 @@ arayüzünden sohbet etmenizi sağlar. Sohbet geçmişi ve ayarlar cihazda tutul
 ## 1.1 Foundation Update
 
 - Streaming sohbet ve Thinking desteği
-- Sohbet geçmişi, yeniden adlandırma ve içerik arama
-- Mesaj kopyalama
+- Sohbet geçmişi, yeniden adlandırma ve mesaj içeriğinde arama
+- Mesaj ve kod bloğu kopyalama
 - Son Aether yanıtını yeniden üretme
-- Model indirme, seçme ve silme
-- Model/context/temperature ayarları
+- Sohbeti Markdown olarak dışa aktarma
+- Model indirme, seçme ve güvenli biçimde silme
+- Context / temperature / top-p / top-k / repeat penalty / çıktı token ayarları
+- Özel system prompt desteği
 - Token, süre ve tok/s istatistikleri
 - Sohbet ve model silme için onay ekranları
+- Daha zengin Markdown: başlık, liste, checkbox, quote, link, strike ve code block
 - Sistem / açık / koyu tema
-- XDG uyumlu ayar ve veri dizinleri
+- XDG uyumlu ayar ve veri dizinleri ve 1.0 verilerinden otomatik geçiş
+- Modüler `aether_app` uygulama katmanı
 - Flatpak/AppStream altyapısı
-- GitHub Actions doğrulamaları
+- GitHub Actions ve temel unit testleri
 
 ## Gereksinimler
 
