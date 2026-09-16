@@ -14,7 +14,7 @@ modules:
   - name: aether
     buildsystem: simple
     build-commands:
-      - install -d /app/share/aether
+      - install -d /app/share/aether/aether_app
       - install -Dm755 aether.py /app/share/aether/aether.py
       - install -Dm644 main.py /app/share/aether/main.py
       - install -Dm644 ollama.py /app/share/aether/ollama.py
@@ -22,6 +22,11 @@ modules:
       - install -Dm644 config.py /app/share/aether/config.py
       - install -Dm644 version.py /app/share/aether/version.py
       - install -Dm644 style.css /app/share/aether/style.css
+      - install -Dm644 aether_app/__init__.py /app/share/aether/aether_app/__init__.py
+      - install -Dm644 aether_app/bootstrap.py /app/share/aether/aether_app/bootstrap.py
+      - install -Dm644 aether_app/markdown.py /app/share/aether/aether_app/markdown.py
+      - install -Dm644 aether_app/settings.py /app/share/aether/aether_app/settings.py
+      - install -Dm644 aether_app/window.py /app/share/aether/aether_app/window.py
       - install -Dm644 data/com.murat.Aether.desktop /app/share/applications/com.murat.Aether.desktop
       - install -Dm644 data/com.murat.Aether.metainfo.xml /app/share/metainfo/com.murat.Aether.metainfo.xml
       - install -Dm644 data/com.murat.Aether.svg /app/share/icons/hicolor/scalable/apps/com.murat.Aether.svg
