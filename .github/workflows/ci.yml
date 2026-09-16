@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - aether-1.1
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install validators
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y appstream desktop-file-utils
+
+      - name: Compile Python sources
+        run: python3 -m compileall -q .
+
+      - name: Run unit tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Validate installer
+        run: bash -n install.sh
+
+      - name: Validate desktop entry
+        run: desktop-file-validate data/com.murat.Aether.desktop
+
+      - name: Validate AppStream metadata
+        run: appstreamcli validate --no-net data/com.murat.Aether.metainfo.xml

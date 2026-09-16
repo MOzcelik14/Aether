@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.murat.Aether</id>
+  <name>Aether</name>
+  <summary>Ollama için yerel masaüstü yapay zeka istemcisi</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <launchable type="desktop-id">com.murat.Aether.desktop</launchable>
+
+  <developer id="io.github.mozcelik14">
+    <name>Murat Özçelik</name>
+  </developer>
+
+  <description>
+    <p>
+      Aether, Ollama üzerinde çalışan yerel modellerle GTK4 ve Libadwaita
+      arayüzü üzerinden sohbet etmeyi sağlayan açık kaynaklı bir masaüstü
+      istemcisidir.
+    </p>
+    <p>
+      Sohbet geçmişi ve uygulama ayarları cihazda tutulur. Aether uzak bir
+      Ollama sunucusuna bağlanacak şekilde de yapılandırılabilir.
+    </p>
+  </description>
+
+  <url type="homepage">https://github.com/MOzcelik14/Aether</url>
+  <url type="bugtracker">https://github.com/MOzcelik14/Aether/issues</url>
+  <url type="vcs-browser">https://github.com/MOzcelik14/Aether</url>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/MOzcelik14/Aether/main/assets/1.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/MOzcelik14/Aether/main/assets/2.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/MOzcelik14/Aether/main/assets/3.png</image>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="1.1.0" date="2026-09-16">
+      <description>
+        <p>
+          Altyapı, sohbet güvenliği, model yönetimi, tema desteği ve
+          dağıtım süreçlerini iyileştiren Foundation Update.
+        </p>
+      </description>
+    </release>
+    <release version="1.0.0" date="2026-09-05"/>
+  </releases>
+
+  <content_rating type="oars-1.1"/>
+</component>
