@@ -97,6 +97,11 @@ FILES=(
     config.py
     version.py
     style.css
+    aether_app/__init__.py
+    aether_app/bootstrap.py
+    aether_app/markdown.py
+    aether_app/settings.py
+    aether_app/window.py
     LICENSE
     data/com.murat.Aether.desktop
     data/com.murat.Aether.metainfo.xml
@@ -127,6 +132,7 @@ mkdir -p \
     "$PKG_DIR/DEBIAN" \
     "$PKG_DIR/usr/bin" \
     "$PKG_DIR/usr/share/aether" \
+    "$PKG_DIR/usr/share/aether/aether_app" \
     "$PKG_DIR/usr/share/applications" \
     "$PKG_DIR/usr/share/metainfo" \
     "$PKG_DIR/usr/share/icons/hicolor/scalable/apps" \
@@ -135,6 +141,8 @@ mkdir -p \
 install -m 755 aether.py "$PKG_DIR/usr/share/aether/aether.py"
 install -m 644 main.py ollama.py database.py config.py version.py style.css \
     "$PKG_DIR/usr/share/aether/"
+install -m 644 aether_app/*.py \
+    "$PKG_DIR/usr/share/aether/aether_app/"
 install -m 644 data/com.murat.Aether.desktop \
     "$PKG_DIR/usr/share/applications/com.murat.Aether.desktop"
 install -m 644 data/com.murat.Aether.metainfo.xml \
