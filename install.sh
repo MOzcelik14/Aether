@@ -1,391 +1,164 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
+set -Eeuo pipefail
 
-# ============================================================
-# RENKLER VE STİL
-# ============================================================
+APP_NAME="aether"
+APP_TITLE="Aether"
+AETHER_REF="${AETHER_REF:-main}"
+BASE_URL="https://raw.githubusercontent.com/MOzcelik14/Aether/${AETHER_REF}"
 
-if [ -t 1 ]; then
-    BOLD="\033[1m"
-    DIM="\033[2m"
-    RESET="\033[0m"
-
-    RED="\033[38;5;203m"
-    GREEN="\033[38;5;114m"
-    YELLOW="\033[38;5;221m"
-    BLUE="\033[38;5;75m"
-    CYAN="\033[38;5;80m"
-    MAGENTA="\033[38;5;177m"
-    GRAY="\033[38;5;244m"
+if [[ ${EUID} -eq 0 ]]; then
+    SUDO=()
 else
-    BOLD=""; DIM=""; RESET=""
-    RED=""; GREEN=""; YELLOW=""; BLUE=""; CYAN=""; MAGENTA=""; GRAY=""
+    if ! command -v sudo >/dev/null 2>&1; then
+        echo "Hata: sudo bulunamadı."
+        exit 1
+    fi
+    SUDO=(sudo)
 fi
 
-CHECK="${GREEN}✔${RESET}"
-CROSS="${RED}✘${RESET}"
-ARROW="${CYAN}➜${RESET}"
-INFO="${BLUE}ℹ${RESET}"
-WARN="${YELLOW}⚠${RESET}"
-
-# ============================================================
-# YARDIMCI FONKSİYONLAR
-# ============================================================
-
-hr() {
-    local width="${1:-63}"
-    printf "${GRAY}"
-    printf '─%.0s' $(seq 1 "$width")
-    printf "${RESET}\n"
-}
-
-banner() {
-    echo ""
-    printf "${MAGENTA}${BOLD}"
-    cat <<'EOF'
-     █████╗ ███████╗████████╗██╗  ██╗███████╗██████╗
-    ██╔══██╗██╔════╝╚══██╔══╝██║  ██║██╔════╝██╔══██╗
-    ███████║█████╗     ██║   ███████║█████╗  ██████╔╝
-    ██╔══██║██╔══╝     ██║   ██╔══██║██╔══╝  ██╔══██╗
-    ██║  ██║███████╗   ██║   ██║  ██║███████╗██║  ██║
-    ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
-EOF
-    printf "${RESET}"
-    echo -e "         ${DIM}MOzcelik14 tarafından geliştirildi${RESET}"
-    echo ""
-    hr
-}
-
-section() {
-    echo ""
-    echo -e "${BOLD}${BLUE}▌ $1${RESET}"
-    hr
-}
-
-step() {
-    echo -e "  ${ARROW} $1"
+say() {
+    printf '\n\033[1;35m%s\033[0m\n' "$1"
 }
 
 ok() {
-    echo -e "  ${CHECK} $1"
+    printf '  \033[32m✔\033[0m %s\n' "$1"
 }
 
 warn() {
-    echo -e "  ${WARN} ${YELLOW}$1${RESET}"
+    printf '  \033[33m⚠\033[0m %s\n' "$1"
 }
 
 fail() {
-    echo ""
-    echo -e "  ${CROSS} ${RED}${BOLD}HATA:${RESET} ${RED}$1${RESET}"
-    echo ""
+    printf '  \033[31m✘ %s\033[0m\n' "$1" >&2
     exit 1
 }
 
-# Bir komutu spinner ile çalıştırır, çıktısını gizler (hata olursa gösterir)
-run_spinner() {
-    local msg="$1"
-    shift
-    local logfile
-    logfile=$(mktemp)
-
-    ("$@" >"$logfile" 2>&1) &
-    local pid=$!
-
-    local frames='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-    local i=0
-
-    tput civis 2>/dev/null || true
-    while kill -0 "$pid" 2>/dev/null; do
-        i=$(( (i + 1) % ${#frames} ))
-        printf "\r\033[K  ${CYAN}%s${RESET} %s" "${frames:$i:1}" "$msg"
-        sleep 0.1
-    done
-    tput cnorm 2>/dev/null || true
-
-    if wait "$pid"; then
-        printf "\r\033[K  ${CHECK} %s\n" "$msg"
-        rm -f "$logfile"
-        return 0
-    else
-        printf "\r\033[K  ${CROSS} ${RED}%s${RESET}\n" "$msg"
-        echo -e "${DIM}"
-        tail -n 20 "$logfile"
-        echo -e "${RESET}"
-        rm -f "$logfile"
-        return 1
-    fi
-}
-
-progress_bar() {
-    local current=$1 total=$2 label=$3
-    local width=30
-    local filled=$(( current * width / total ))
-    local empty=$(( width - filled ))
-
-    printf "\r\033[K  ${CYAN}["
-    [ "$filled" -gt 0 ] && printf '█%.0s' $(seq 1 "$filled")
-    [ "$empty" -gt 0 ] && printf '░%.0s' $(seq 1 "$empty")
-    printf "]${RESET} %s" "$label"
-
-    if [ "$current" -eq "$total" ]; then
-        echo ""
-    fi
-}
-
-# ============================================================
-# BAŞLANGIÇ
-# ============================================================
-
-clear 2>/dev/null || true
-banner
-
-# ============================================================
-# ROOT KONTROLÜ
-# ============================================================
-
-if [ "$EUID" -eq 0 ]; then
-    fail "Bu script sudo ile değil, normal kullanıcı olarak çalıştırılmalı."
+if [[ ${1:-} == "--uninstall" ]]; then
+    say "Aether kaldırılıyor"
+    "${SUDO[@]}" apt-get remove -y "$APP_NAME"
+    ok "Uygulama kaldırıldı."
+    printf '  Kullanıcı verileri korundu: ~/.config/aether ve ~/.local/share/aether\n'
+    exit 0
 fi
 
-# ============================================================
-# SUDO OTURUMU
-# ============================================================
-# Script boyunca arka planda çalışan (spinner'lı) sudo komutlarının
-# şifre sorusu görünmeden takılmaması için oturumu önden alıp canlı tutuyoruz.
+command -v apt-get >/dev/null 2>&1 \
+    || fail "Bu kurucu şu anda Debian/Ubuntu/Mint/Pardus gibi APT tabanlı sistemleri destekliyor."
 
-step "Sudo yetkisi isteniyor..."
-sudo -v || fail "Sudo yetkisi alınamadı."
-
-( while true; do sudo -n true; sleep 60; done ) 2>/dev/null &
-SUDO_KEEPALIVE_PID=$!
-
-# ============================================================
-# TEMİZLİK
-# ============================================================
-
-TMP_DIR=""
-
-cleanup() {
-    kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true
-    if [ -n "$TMP_DIR" ] && [ -d "$TMP_DIR" ]; then
-        rm -rf "$TMP_DIR"
-    fi
-}
-
-trap cleanup EXIT
-
-# ============================================================
-# INTERNET KONTROLÜ
-# ============================================================
-
-section "Ön Kontroller"
-
-step "Internet bağlantısı kontrol ediliyor..."
-if ! curl -Is --max-time 5 https://github.com >/dev/null 2>&1; then
-    fail "Internet bağlantısı bulunamadı."
+if [[ ${#SUDO[@]} -gt 0 ]]; then
+    say "Yetki kontrolü"
+    sudo -v || fail "sudo yetkisi alınamadı."
 fi
-ok "Internet bağlantısı mevcut"
 
-# ============================================================
-# ÇALIŞMA DİZİNİ
-# ============================================================
+if ! command -v curl >/dev/null 2>&1; then
+    say "curl kuruluyor"
+    "${SUDO[@]}" apt-get install -y --no-install-recommends curl \
+        || fail "curl kurulamadı. Önce 'sudo apt update' çalıştırmayı deneyin."
+fi
 
-step "Çalışma dizini hazırlanıyor..."
-TMP_DIR=$(mktemp -d)
+say "Sistem bağımlılıkları"
+
+PACKAGES=(
+    python3
+    python3-gi
+    gir1.2-gtk-4.0
+    gir1.2-adw-1
+    desktop-file-utils
+    dpkg
+)
+
+MISSING=()
+for package in "${PACKAGES[@]}"; do
+    if ! dpkg-query -W -f='${Status}' "$package" 2>/dev/null \
+        | grep -q "ok installed"; then
+        MISSING+=("$package")
+    fi
+done
+
+if [[ ${#MISSING[@]} -gt 0 ]]; then
+    printf '  Kurulacak: %s\n' "${MISSING[*]}"
+    "${SUDO[@]}" apt-get install -y --no-install-recommends "${MISSING[@]}" \
+        || fail "Bağımlılıklar kurulamadı. Paket listesi eskiyse 'sudo apt update' çalıştırın."
+else
+    ok "Gerekli sistem paketleri zaten kurulu."
+fi
+
+TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$TMP_DIR"' EXIT
 cd "$TMP_DIR"
-ok "Dizin: ${DIM}$TMP_DIR${RESET}"
 
-# ============================================================
-# DOSYALARI İNDİR
-# ============================================================
+say "Aether ${AETHER_REF} indiriliyor"
 
-section "Aether Dosyaları"
+FILES=(
+    aether.py
+    main.py
+    ollama.py
+    database.py
+    config.py
+    version.py
+    style.css
+    LICENSE
+    data/com.murat.Aether.desktop
+    data/com.murat.Aether.metainfo.xml
+    data/com.murat.Aether.svg
+)
 
-BASE_URL="https://raw.githubusercontent.com/MOzcelik14/Aether/main"
-FILES=(main.py ollama.py database.py config.py style.css)
-TOTAL=${#FILES[@]}
-COUNT=0
-
-for f in "${FILES[@]}"; do
-    COUNT=$((COUNT + 1))
-    curl -fLsS -o "$f" "$BASE_URL/$f"
-    progress_bar "$COUNT" "$TOTAL" "$f indirildi"
+for file in "${FILES[@]}"; do
+    mkdir -p "$(dirname "$file")"
+    curl -fLsS "${BASE_URL}/${file}" -o "$file" \
+        || fail "${file} indirilemedi."
 done
 
-if [ ! -s "main.py" ]; then
-    fail "Aether dosyaları indirilemedi."
-fi
-ok "Tüm Aether dosyaları indirildi"
+VERSION="$(
+    python3 - <<'PY'
+namespace = {}
+with open("version.py", "r", encoding="utf-8") as file:
+    exec(file.read(), namespace)
+print(namespace["__version__"])
+PY
+)"
 
-# ============================================================
-# APT BAĞIMLILIKLARI
-# ============================================================
+ok "Aether ${VERSION} indirildi."
 
-section "Sistem Bağımlılıkları"
+say "DEB paketi oluşturuluyor"
 
-run_spinner "APT paket listesi güncelleniyor" sudo apt update || fail "APT güncellenemedi."
-
-step "Bağımlılıklar kuruluyor: ${DIM}python3, python3-gi, gtk4, libadwaita, curl, dpkg${RESET}"
-run_spinner "Bağımlılıklar kuruluyor" sudo apt install -y \
-    python3 \
-    python3-gi \
-    gir1.2-gtk-4.0 \
-    gir1.2-adw-1 \
-    curl \
-    dpkg || fail "Bağımlılıklar kurulamadı."
-
-# ============================================================
-# OLLAMA KURULUMU
-# ============================================================
-
-section "Ollama Kurulumu"
-
-if command -v ollama >/dev/null 2>&1; then
-    OLLAMA_VER=$(ollama --version 2>/dev/null | head -n1 || echo "bilinmiyor")
-    ok "Ollama zaten kurulu ${DIM}($OLLAMA_VER)${RESET}"
-else
-    run_spinner "Ollama kuruluyor" bash -c "curl -fsSL https://ollama.com/install.sh | sh" \
-        || fail "Ollama kurulumu başarısız."
-fi
-
-# ============================================================
-# OLLAMA KULLANICISI
-# ============================================================
-
-step "Ollama sistem kullanıcısı kontrol ediliyor..."
-if ! id ollama >/dev/null 2>&1; then
-    fail "'ollama' sistem kullanıcısı bulunamadı. Ollama kurulumu eksik görünüyor."
-fi
-ok "ollama kullanıcısı mevcut"
-
-# ============================================================
-# OLLAMA DİZİNLERİ VE İZİNLER
-# ============================================================
-
-step "Ollama çalışma dizinleri hazırlanıyor..."
-sudo mkdir -p /usr/share/ollama
-sudo chown -R ollama:ollama /usr/share/ollama
-
-if [ -d /var/lib/ollama ]; then
-    sudo chown -R ollama:ollama /var/lib/ollama
-fi
-ok "Dizin izinleri ayarlandı"
-
-# ============================================================
-# OLLAMA SERVİSİ
-# ============================================================
-
-step "Ollama systemd servisi kontrol ediliyor..."
-if ! systemctl list-unit-files 2>/dev/null | grep -q "^ollama.service"; then
-    fail "ollama.service bulunamadı."
-fi
-
-run_spinner "Ollama servisi etkinleştiriliyor" sudo systemctl enable ollama.service \
-    || fail "Servis etkinleştirilemedi."
-run_spinner "Ollama servisi başlatılıyor" sudo systemctl restart ollama.service \
-    || fail "Servis başlatılamadı."
-
-# ============================================================
-# OLLAMA SERVİS KONTROLÜ
-# ============================================================
-
-step "Ollama servisinin hazır olması bekleniyor..."
-
-OLLAMA_READY=0
-for i in $(seq 1 15); do
-    progress_bar "$i" 15 "servis kontrol ediliyor ($i/15)"
-    if curl -fsS --max-time 2 http://127.0.0.1:11434/api/version >/dev/null 2>&1; then
-        OLLAMA_READY=1
-        break
-    fi
-    sleep 1
-done
-echo ""
-
-if [ "$OLLAMA_READY" -ne 1 ]; then
-    echo ""
-    warn "Ollama servis durumu:"
-    systemctl status ollama --no-pager || true
-    echo ""
-    warn "Son Ollama logları:"
-    sudo journalctl -u ollama -n 30 --no-pager || true
-    echo ""
-    fail "Ollama başlatılamadı."
-fi
-
-ok "Ollama çalışıyor"
-
-# ============================================================
-# MODEL
-# ============================================================
-
-section "Yapay Zeka Modeli"
-
-DEFAULT_MODEL="qwen3:8b"
-step "Varsayılan model kontrol ediliyor: ${BOLD}$DEFAULT_MODEL${RESET}"
-
-if ollama list 2>/dev/null | awk 'NR>1 {print $1}' | grep -Fxq "$DEFAULT_MODEL"; then
-    ok "$DEFAULT_MODEL zaten kurulu"
-else
-    run_spinner "$DEFAULT_MODEL indiriliyor (bu biraz sürebilir)" ollama pull "$DEFAULT_MODEL" \
-        || fail "$DEFAULT_MODEL indirilemedi."
-fi
-
-# ============================================================
-# .DEB PAKETİ
-# ============================================================
-
-section "Aether Paketleniyor"
-
-APP_NAME="aether"
-VERSION="0.1.0.$(date +%Y%m%d%H%M%S)"
-ARCH="all"
-
-BUILD_DIR="$TMP_DIR/dist"
-PKG_DIR="$BUILD_DIR/${APP_NAME}_${VERSION}_${ARCH}"
-
+PKG_DIR="$TMP_DIR/pkg"
 mkdir -p \
     "$PKG_DIR/DEBIAN" \
     "$PKG_DIR/usr/bin" \
     "$PKG_DIR/usr/share/aether" \
-    "$PKG_DIR/usr/share/applications"
+    "$PKG_DIR/usr/share/applications" \
+    "$PKG_DIR/usr/share/metainfo" \
+    "$PKG_DIR/usr/share/icons/hicolor/scalable/apps" \
+    "$PKG_DIR/usr/share/doc/aether"
 
-cp \
-    main.py \
-    ollama.py \
-    database.py \
-    config.py \
-    style.css \
+install -m 755 aether.py "$PKG_DIR/usr/share/aether/aether.py"
+install -m 644 main.py ollama.py database.py config.py version.py style.css \
     "$PKG_DIR/usr/share/aether/"
+install -m 644 data/com.murat.Aether.desktop \
+    "$PKG_DIR/usr/share/applications/com.murat.Aether.desktop"
+install -m 644 data/com.murat.Aether.metainfo.xml \
+    "$PKG_DIR/usr/share/metainfo/com.murat.Aether.metainfo.xml"
+install -m 644 data/com.murat.Aether.svg \
+    "$PKG_DIR/usr/share/icons/hicolor/scalable/apps/com.murat.Aether.svg"
+install -m 644 LICENSE "$PKG_DIR/usr/share/doc/aether/copyright"
 
 cat > "$PKG_DIR/usr/bin/aether" <<'EOF'
 #!/bin/sh
-exec /usr/bin/python3 /usr/share/aether/main.py "$@"
+exec /usr/bin/python3 /usr/share/aether/aether.py "$@"
 EOF
 chmod 755 "$PKG_DIR/usr/bin/aether"
 
-cat > "$PKG_DIR/usr/share/applications/com.murat.Aether.desktop" <<'EOF'
-[Desktop Entry]
-Name=Aether
-Comment=Ollama tabanlı yerel yapay zeka istemcisi
-Exec=aether
-Icon=applications-science
-Terminal=false
-Type=Application
-Categories=Utility;Development;AI;
-StartupNotify=true
-EOF
-
 cat > "$PKG_DIR/DEBIAN/control" <<EOF
-Package: $APP_NAME
-Version: $VERSION
+Package: aether
+Version: ${VERSION}
 Section: utils
 Priority: optional
-Architecture: $ARCH
+Architecture: all
 Maintainer: Murat Özçelik
-Depends: python3, python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1
+Depends: python3 (>= 3.10), python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1
 Description: Aether - Ollama tabanlı yerel yapay zeka istemcisi
+ Yerel veya uzak Ollama sunucularıyla GTK4/Libadwaita üzerinden sohbet edin.
 EOF
 
 cat > "$PKG_DIR/DEBIAN/postinst" <<'EOF'
@@ -394,76 +167,41 @@ set -e
 if command -v update-desktop-database >/dev/null 2>&1; then
     update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
 fi
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor >/dev/null 2>&1 || true
+fi
 exit 0
 EOF
 chmod 755 "$PKG_DIR/DEBIAN/postinst"
 
-DEB_FILE="$BUILD_DIR/${APP_NAME}_${VERSION}_${ARCH}.deb"
+DEB_FILE="$TMP_DIR/aether_${VERSION}_all.deb"
+dpkg-deb --build "$PKG_DIR" "$DEB_FILE" >/dev/null \
+    || fail "DEB paketi oluşturulamadı."
 
-run_spinner ".deb paketi oluşturuluyor" dpkg-deb --build "$PKG_DIR" "$DEB_FILE" \
-    || fail ".deb paketi oluşturulamadı."
-
-if [ ! -s "$DEB_FILE" ]; then
-    fail ".deb paketi oluşturulamadı."
-fi
-
-run_spinner "Aether kuruluyor" sudo apt install --reinstall -y "$DEB_FILE" \
+"${SUDO[@]}" apt-get install -y "$DEB_FILE" \
     || fail "Aether kurulamadı."
 
-# ============================================================
-# KURULUM KONTROLÜ
-# ============================================================
+ok "Aether ${VERSION} kuruldu."
 
-section "Kurulum Kontrolü"
-
-ALL_OK=1
-
-if command -v aether >/dev/null 2>&1; then
-    ok "Aether"
-else
-    echo -e "  ${CROSS} Aether"
-    ALL_OK=0
-fi
+say "Ollama kontrolü"
 
 if command -v ollama >/dev/null 2>&1; then
-    ok "Ollama"
+    ok "Ollama kurulu."
+
+    if curl -fsS --max-time 2 \
+        http://127.0.0.1:11434/api/version >/dev/null 2>&1; then
+        ok "Yerel Ollama API erişilebilir."
+
+        if [[ "$(ollama list 2>/dev/null | sed 1d | wc -l)" -eq 0 ]]; then
+            warn "Henüz model yok. Örnek: ollama pull qwen3:4b"
+        fi
+    else
+        warn "Ollama kurulu fakat API şu anda erişilemiyor."
+        printf '  Servisi dağıtımınıza uygun şekilde başlatın ve Aether içinden bağlantıyı tekrar kontrol edin.\n'
+    fi
 else
-    echo -e "  ${CROSS} Ollama"
-    ALL_OK=0
+    warn "Ollama kurulu değil. Aether yine kuruldu; Ollama'yı ayrıca kurabilirsiniz."
+    printf '  Resmi kurulum: curl -fsSL https://ollama.com/install.sh | sh\n'
 fi
 
-if curl -fsS --max-time 3 http://127.0.0.1:11434/api/version >/dev/null 2>&1; then
-    ok "Ollama API"
-else
-    echo -e "  ${CROSS} Ollama API"
-    ALL_OK=0
-fi
-
-if ollama list 2>/dev/null | awk 'NR>1 {print $1}' | grep -Fxq "$DEFAULT_MODEL"; then
-    ok "$DEFAULT_MODEL"
-else
-    echo -e "  ${CROSS} $DEFAULT_MODEL"
-    ALL_OK=0
-fi
-
-if [ "$ALL_OK" -ne 1 ]; then
-    fail "Kurulum kontrolünde bir veya daha fazla bileşen eksik."
-fi
-
-# ============================================================
-# SONUÇ
-# ============================================================
-
-echo ""
-printf "${GREEN}${BOLD}"
-hr
-echo "        ✔  AETHER BAŞARIYLA KURULDU"
-hr
-printf "${RESET}"
-echo ""
-echo -e "  ${BOLD}Başlatmak için:${RESET}     ${CYAN}aether${RESET}"
-echo -e "  ${BOLD}Ollama API:${RESET}         ${DIM}http://127.0.0.1:11434${RESET}"
-echo -e "  ${BOLD}Model:${RESET}              ${DIM}$DEFAULT_MODEL${RESET}"
-echo ""
-echo -e "${GREEN}Kurulum tamamlandı.${RESET}"
-echo ""
+printf '\n\033[1;32mAether hazır.\033[0m Uygulama menüsünden veya terminalde `aether` komutuyla açabilirsiniz.\n'
