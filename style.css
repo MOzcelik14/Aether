@@ -1,41 +1,33 @@
+@define-color aether_accent #d99a4e;
+@define-color aether_accent_hover #e3a65a;
 
-* {
-    font-family: "JetBrains Mono", monospace;
-}
+/* Aether 1.1: use Libadwaita theme colors so light/dark/system all work. */
 
 window {
-    background: #15171a;
-    color: #e9e6de;
+    background: @window_bg_color;
+    color: @window_fg_color;
 }
 
-/* ================================
-   SIDEBAR
-   ================================ */
-
 .sidebar {
-    background: #111315;
-    border-radius: 16px;
+    background: @headerbar_bg_color;
+    border-right: 1px solid alpha(@window_fg_color, 0.10);
     padding: 12px;
 }
 
 .app-title {
-    color: #d99a4e;
+    color: @aether_accent;
     font-size: 21px;
     font-weight: 700;
     margin: 4px 4px 14px 4px;
 }
 
 .section-title {
-    color: #777a80;
+    color: alpha(@window_fg_color, 0.55);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 1.2px;
     margin: 12px 4px 5px 4px;
 }
-
-/* ================================
-   BUTTONS
-   ================================ */
 
 button {
     min-height: 38px;
@@ -43,55 +35,44 @@ button {
 }
 
 button.suggested-action {
-    background: #d99a4e;
+    background: @aether_accent;
     color: #15171a;
     font-weight: 700;
 }
 
 button.suggested-action:hover {
-    background: #e3a65a;
+    background: @aether_accent_hover;
 }
 
 button.flat {
     background: transparent;
-    color: #d99a4e;
 }
-
-button.flat:hover {
-    background: #24272b;
-}
-
-/* ================================
-   HISTORY
-   ================================ */
 
 .history-row {
     margin: 2px 0;
+    border-radius: 9px;
 }
 
 .history-row button {
     min-height: 36px;
     background: transparent;
-    color: #c9c5bb;
 }
 
 .history-row button:hover {
-    background: #1c1f23;
+    background: alpha(@window_fg_color, 0.07);
 }
 
-/* ================================
-   MODEL
-   ================================ */
+.history-row.active-chat {
+    background: alpha(@aether_accent, 0.15);
+}
 
 .model-info {
-    background: #1a1d21;
-    border: 1px solid #2a2e33;
+    background: alpha(@window_fg_color, 0.045);
+    border: 1px solid alpha(@window_fg_color, 0.10);
     border-radius: 9px;
-
     padding: 10px;
     margin: 3px 0;
-
-    color: #929087;
+    color: alpha(@window_fg_color, 0.62);
     font-size: 11px;
 }
 
@@ -99,224 +80,153 @@ dropdown {
     min-height: 40px;
 }
 
-/* ================================
-   CHAT HEADER
-   ================================ */
-
 .chat-title {
-    color: #e9e6de;
+    color: @window_fg_color;
     font-size: 18px;
     font-weight: 600;
 }
-
-.chat-area {
-    background: #15171a;
-}
-
-/* ================================
-   MESSAGES
-   ================================ */
 
 .user-message,
 .assistant-message {
     border-radius: 12px;
     padding: 14px 16px;
-
     margin-top: 6px;
     margin-bottom: 6px;
 }
 
-/* USER → SAĞ */
 .user-message {
-    background: #23272c;
-
+    background: alpha(@window_fg_color, 0.085);
     margin-left: 180px;
     margin-right: 0;
 }
 
-/* ASSISTANT → SOL */
 .assistant-message {
-    background: #191c20;
-
-    border-left: 3px solid #d99a4e;
-
+    background: alpha(@window_fg_color, 0.035);
+    border-left: 3px solid @aether_accent;
     margin-left: 0;
     margin-right: 180px;
 }
 
 .message-role {
-    color: #d99a4e;
-
+    color: @aether_accent;
     font-size: 10px;
     font-weight: 700;
-
     letter-spacing: 0.8px;
 }
 
 .user-message label,
 .assistant-message label {
-    color: #e9e6de;
-
+    color: @window_fg_color;
     font-size: 13px;
 }
 
-/* ================================
-   MARKDOWN
-   ================================ */
+.message-actions {
+    margin-top: 2px;
+}
+
+.message-actions button {
+    min-height: 28px;
+    padding: 2px 8px;
+    font-size: 11px;
+    color: alpha(@window_fg_color, 0.65);
+}
 
 .markdown-h1 {
-    color: #d99a4e;
+    color: @aether_accent;
     font-size: 20px;
     font-weight: 700;
-
     margin-top: 8px;
     margin-bottom: 7px;
 }
 
 .markdown-h2 {
-    color: #e9e6de;
+    color: @window_fg_color;
     font-size: 17px;
     font-weight: 700;
-
     margin-top: 7px;
     margin-bottom: 5px;
 }
 
 .markdown-h3 {
-    color: #e9e6de;
+    color: @window_fg_color;
     font-size: 15px;
     font-weight: 700;
-
     margin-top: 6px;
     margin-bottom: 4px;
 }
 
 .markdown-quote {
-    color: #99958c;
+    color: alpha(@window_fg_color, 0.65);
     font-style: italic;
-
-    border-left: 3px solid #d99a4e;
+    border-left: 3px solid @aether_accent;
     padding-left: 8px;
 }
 
-/* ================================
-   CODE
-   ================================ */
-
 .code-block {
-    background: #0e1012;
-
-    border: 1px solid #2d3136;
+    background: @view_bg_color;
+    border: 1px solid alpha(@window_fg_color, 0.12);
     border-radius: 10px;
-
     padding: 10px;
-
     margin-top: 8px;
     margin-bottom: 8px;
 }
 
 .code-language {
-    color: #8f8c84;
-
+    color: alpha(@window_fg_color, 0.58);
     font-size: 10px;
     font-weight: 700;
 }
 
 .code-text {
-    background: #111315;
-
-    color: #e9e6de;
-
+    background: alpha(@window_fg_color, 0.035);
+    color: @window_fg_color;
     border-radius: 7px;
-
     padding: 11px;
-
+    font-family: monospace;
     font-size: 12px;
 }
 
-/* ================================
-   INPUT
-   ================================ */
-
 .chat-input {
-    background: #202327;
-
-    color: #e9e6de;
-
-    border: 1px solid #30343a;
+    background: @view_bg_color;
+    color: @view_fg_color;
+    border: 1px solid alpha(@window_fg_color, 0.14);
     border-radius: 12px;
-
     font-size: 13px;
+    padding: 8px 12px;
 }
 
 .chat-input:focus {
-    border-color: #d99a4e;
+    border-color: @aether_accent;
 }
 
-/* ================================
-   SCROLLBAR
-   ================================ */
-
 scrollbar slider {
-    background: #41464c;
+    background: alpha(@window_fg_color, 0.22);
     border-radius: 10px;
 }
 
 scrollbar slider:hover {
-    background: #575d64;
+    background: alpha(@window_fg_color, 0.34);
 }
 
-/* ================================
-   SEPARATOR
-   ================================ */
-
 separator {
-    background: #292d31;
-
+    background: alpha(@window_fg_color, 0.10);
     margin: 5px 0;
 }
 
-/* ================================
-   GENERAL
-   ================================ */
-
-label {
-    color: #e9e6de;
-}
-
 .dim-label {
-    color: #777a80;
+    color: alpha(@window_fg_color, 0.55);
 }
 
 .welcome {
-    color: #777a80;
+    color: alpha(@window_fg_color, 0.58);
     font-size: 14px;
 }
 
-/* ================================
-   INPUT CONTAINER
-   ================================ */
-
-.chat-input {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 12px;
-    padding-right: 12px;
-}
-
-/* ================================
-   WINDOW HEADER BAR
-   ================================ */
-
 headerbar {
-    background: #111315;
-    color: #e9e6de;
+    background: @headerbar_bg_color;
+    color: @headerbar_fg_color;
     min-height: 42px;
-}
-
-headerbar title {
-    color: #e9e6de;
-    font-weight: 600;
+    border-bottom: 1px solid alpha(@window_fg_color, 0.08);
 }
 
 headerbar button {
@@ -326,11 +236,5 @@ headerbar button {
 }
 
 headerbar button:hover {
-    background: #24272b;
+    background: alpha(@window_fg_color, 0.08);
 }
-
-headerbar button.close:hover {
-    background: #c94c4c;
-    color: #ffffff;
-}
-
