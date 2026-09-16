@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Aether
+Comment=Ollama tabanlı yerel yapay zeka istemcisi
+Exec=aether
+Icon=com.murat.Aether
+Terminal=false
+Type=Application
+Categories=Utility;Development;
+Keywords=AI;LLM;Ollama;Chat;Local;
+StartupNotify=true
+StartupWMClass=com.murat.Aether
