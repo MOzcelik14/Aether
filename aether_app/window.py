@@ -85,48 +85,281 @@ class EnhancedLocalAIWindow(legacy.LocalAIWindow):
             custom_prompt or BASE_SYSTEM_PROMPT
         )
 
+    def show_welcome(self):
+        """A useful, focused starting point instead of an empty chat pane."""
+        while self.messages_box.get_first_child() is not None:
+            self.messages_box.remove(
+                self.messages_box.get_first_child()
+            )
+
+        welcome = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=9,
+        )
+        welcome.set_hexpand(True)
+        welcome.set_vexpand(True)
+        welcome.set_halign(Gtk.Align.CENTER)
+        welcome.set_valign(Gtk.Align.CENTER)
+        welcome.add_css_class("welcome-surface")
+
+        mark = Gtk.Box()
+        mark.set_halign(Gtk.Align.CENTER)
+        mark.set_valign(Gtk.Align.CENTER)
+        mark.add_css_class("welcome-mark")
+        mark.set_size_request(76, 76)
+
+        icon = Gtk.Image.new_from_icon_name(
+            "system-run-symbolic"
+        )
+        icon.set_pixel_size(34)
+        icon.set_halign(Gtk.Align.CENTER)
+        icon.set_valign(Gtk.Align.CENTER)
+        icon.set_hexpand(True)
+        icon.set_vexpand(True)
+        mark.append(icon)
+        welcome.append(mark)
+
+        heading = Gtk.Label(
+            label="Fikirlerine alan aç."
+        )
+        heading.set_justify(Gtk.Justification.CENTER)
+        heading.add_css_class("welcome-title")
+        welcome.append(heading)
+
+        description = Gtk.Label(
+            label=(
+                "Bir model seç, sorunu yaz ve Aether ile "
+                "birlikte düşünmeye başla."
+            )
+        )
+        description.set_wrap(True)
+        description.set_max_width_chars(48)
+        description.set_justify(Gtk.Justification.CENTER)
+        description.add_css_class(
+            "welcome-description"
+        )
+        welcome.append(description)
+
+        starters = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=8,
+        )
+        starters.set_halign(Gtk.Align.CENTER)
+        starters.add_css_class("welcome-prompts")
+
+        suggestions = (
+            (
+                "Bir fikri birlikte geliştirelim  ↗",
+                "Aklımdaki fikri somut bir plana "
+                "dönüştürmeme yardım et.",
+            ),
+            (
+                "Koduma birlikte göz atalım  ↗",
+                "Bir Python projesini daha okunabilir "
+                "ve bakımı kolay hâle nasıl getirebilirim?",
+            ),
+            (
+                "Bir metni daha iyi yazalım  ↗",
+                "Yazdığım metni anlamını koruyarak "
+                "daha akıcı hâle getirmeme yardım et.",
+            ),
+        )
+
+        for label, prompt in suggestions:
+            button = Gtk.Button(label=label)
+            button.add_css_class("welcome-prompt")
+            button.connect(
+                "clicked",
+                self._prefill_welcome_prompt,
+                prompt,
+            )
+            starters.append(button)
+
+        welcome.append(starters)
+
+        hint = Gtk.Label(
+            label="Aether · Ollama destekli sohbet"
+        )
+        hint.add_css_class("welcome-hint")
+        welcome.append(hint)
+
+        self.messages_box.append(welcome)
+
+    def _prefill_welcome_prompt(self, button, prompt):
+        """Keep the draft editable; never send without the user."""
+        self.entry.get_buffer().set_text(prompt)
+        self.entry.grab_focus()
+
     def build_ui(self):
         super().build_ui()
 
+        # The existing layout and signal wiring stay in main.py.
+        # This layer applies the Aether identity without duplicating it.
         model_row = self.model_dropdown.get_parent()
-        if model_row is not None:
-            delete_model = Gtk.Button(label="−")
-            delete_model.set_tooltip_text(
-                "Seçili modeli sil"
+        sidebar = model_row.get_parent()
+        sidebar.add_css_class("aether-sidebar")
+
+        old_brand = sidebar.get_first_child()
+        sidebar.remove(old_brand)
+
+        brand = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            spacing=11,
+        )
+        brand.add_css_class("aether-brand")
+
+        brand_mark = Gtk.Box()
+        brand_mark.add_css_class("aether-brand-icon")
+        brand_mark.set_size_request(42, 42)
+        brand_image = Gtk.Image.new_from_icon_name(
+            "system-run-symbolic"
+        )
+        brand_image.set_pixel_size(24)
+        brand_image.set_hexpand(True)
+        brand_image.set_vexpand(True)
+        brand_mark.append(brand_image)
+        brand.append(brand_mark)
+
+        brand_words = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=1,
+        )
+        brand_words.set_valign(Gtk.Align.CENTER)
+        brand_title = Gtk.Label(label="Aether")
+        brand_title.set_xalign(0)
+        brand_title.add_css_class("app-title")
+        brand_words.append(brand_title)
+
+        brand_caption = Gtk.Label(
+            label="YEREL YAPAY ZEKÂ"
+        )
+        brand_caption.set_xalign(0)
+        brand_caption.add_css_class("brand-caption")
+        brand_words.append(brand_caption)
+        brand.append(brand_words)
+        sidebar.prepend(brand)
+
+        new_chat_button = brand.get_next_sibling()
+        new_chat_button.add_css_class(
+            "new-chat-button"
+        )
+        self.search_entry.add_css_class(
+            "aether-search"
+        )
+        self.model_info.add_css_class("model-panel")
+        self.status_label.add_css_class(
+            "connection-status"
+        )
+
+        refresh_button = model_row.get_last_child()
+        refresh_button.set_child(
+            Gtk.Image.new_from_icon_name(
+                "view-refresh-symbolic"
             )
-            delete_model.connect(
-                "clicked",
-                self.confirm_delete_model,
+        )
+        refresh_button.add_css_class("icon-button")
+
+        delete_model = Gtk.Button()
+        delete_model.set_child(
+            Gtk.Image.new_from_icon_name(
+                "user-trash-symbolic"
             )
-            model_row.append(delete_model)
+        )
+        delete_model.add_css_class("flat")
+        delete_model.add_css_class("icon-button")
+        delete_model.set_tooltip_text(
+            "Seçili modeli sil"
+        )
+        delete_model.connect(
+            "clicked",
+            self.confirm_delete_model,
+        )
+        model_row.append(delete_model)
 
         chat_header = self.chat_title.get_parent()
-        if chat_header is not None:
-            export_button = Gtk.Button(
-                label="Dışa aktar"
-            )
-            export_button.add_css_class("flat")
-            export_button.set_tooltip_text(
-                "Sohbeti Markdown olarak dışa aktar"
-            )
-            export_button.connect(
-                "clicked",
-                self.export_current_chat,
-            )
-            chat_header.append(export_button)
+        chat_header.add_css_class(
+            "conversation-header"
+        )
+        chat_area = chat_header.get_parent()
+        chat_area.add_css_class("chat-surface")
 
-            self.regenerate_button = Gtk.Button(
-                label="Yeniden üret"
+        chat_header.remove(self.chat_title)
+        title_group = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=2,
+        )
+        title_group.set_hexpand(True)
+        title_group.append(self.chat_title)
+
+        subtitle = Gtk.Label(label="YEREL SOHBET")
+        subtitle.set_xalign(0)
+        subtitle.add_css_class("chat-subtitle")
+        title_group.append(subtitle)
+        chat_header.prepend(title_group)
+
+        self.stats_button.add_css_class(
+            "stats-pill"
+        )
+
+        export_button = Gtk.Button(
+            label="Dışa aktar"
+        )
+        export_button.add_css_class("flat")
+        export_button.add_css_class(
+            "header-action"
+        )
+        export_button.set_tooltip_text(
+            "Sohbeti Markdown olarak dışa aktar"
+        )
+        export_button.connect(
+            "clicked",
+            self.export_current_chat,
+        )
+        chat_header.append(export_button)
+
+        self.regenerate_button = Gtk.Button(
+            label="Yeniden üret"
+        )
+        self.regenerate_button.add_css_class(
+            "flat"
+        )
+        self.regenerate_button.add_css_class(
+            "header-action"
+        )
+        self.regenerate_button.set_tooltip_text(
+            "Son Aether yanıtını yeniden üret"
+        )
+        self.regenerate_button.connect(
+            "clicked",
+            self.regenerate_last_response,
+        )
+        chat_header.append(self.regenerate_button)
+
+        self.scroll.add_css_class(
+            "conversation-scroll"
+        )
+        self.messages_box.add_css_class(
+            "conversation-content"
+        )
+        self.messages_box.set_vexpand(True)
+        self.messages_box.set_margin_start(24)
+        self.messages_box.set_margin_end(24)
+
+        composer = self.entry_scroll.get_parent()
+        composer.add_css_class("composer")
+        self.entry_scroll.add_css_class(
+            "composer-scroll"
+        )
+        self.send_button.set_child(
+            Gtk.Image.new_from_icon_name(
+                "mail-send-symbolic"
             )
-            self.regenerate_button.add_css_class("flat")
-            self.regenerate_button.set_tooltip_text(
-                "Son Aether yanıtını yeniden üret"
+        )
+        self.stop_button.set_child(
+            Gtk.Image.new_from_icon_name(
+                "media-playback-stop-symbolic"
             )
-            self.regenerate_button.connect(
-                "clicked",
-                self.regenerate_last_response,
-            )
-            chat_header.append(self.regenerate_button)
+        )
 
         key_controller = Gtk.EventControllerKey()
         key_controller.connect(

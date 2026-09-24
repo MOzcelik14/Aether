@@ -1,117 +1,224 @@
 @define-color aether_accent #d99a4e;
-@define-color aether_accent_hover #e3a65a;
+@define-color aether_accent_hover #e7ae69;
 
-/* Aether 1.1: use Libadwaita theme colors so light/dark/system all work. */
-
+/* Aether desktop: layered surfaces, warm accent, native Adwaita colours. */
 window {
     background: @window_bg_color;
     color: @window_fg_color;
 }
 
-.sidebar {
-    background: @headerbar_bg_color;
+.sidebar,
+.aether-sidebar {
+    background: alpha(@window_fg_color, 0.025);
     border-right: 1px solid alpha(@window_fg_color, 0.10);
     padding: 12px;
 }
 
-.app-title {
+.aether-brand {
+    padding: 4px 4px 14px 4px;
+}
+
+.aether-brand-icon {
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 14px;
     color: @aether_accent;
-    font-size: 21px;
+    background: alpha(@aether_accent, 0.12);
+    border: 1px solid alpha(@aether_accent, 0.20);
+}
+
+.app-title {
+    color: @window_fg_color;
+    font-size: 23px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.brand-caption {
+    color: alpha(@window_fg_color, 0.49);
+    font-size: 10px;
     font-weight: 700;
-    margin: 4px 4px 14px 4px;
+    letter-spacing: 1.1px;
 }
 
 .section-title {
-    color: alpha(@window_fg_color, 0.55);
+    color: alpha(@window_fg_color, 0.52);
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 1.2px;
-    margin: 12px 4px 5px 4px;
+    margin: 13px 5px 6px 5px;
 }
 
 button {
     min-height: 38px;
-    border-radius: 9px;
+    border-radius: 11px;
 }
 
-button.suggested-action {
+button.suggested-action,
+button.new-chat-button {
     background: @aether_accent;
-    color: #15171a;
+    color: #21180e;
     font-weight: 700;
 }
 
-button.suggested-action:hover {
+button.suggested-action:hover,
+button.new-chat-button:hover {
     background: @aether_accent_hover;
+}
+
+button.new-chat-button {
+    min-height: 46px;
+    margin: 2px 0 8px 0;
 }
 
 button.flat {
     background: transparent;
 }
 
+button.icon-button {
+    min-height: 38px;
+    min-width: 38px;
+    padding: 5px;
+    border-radius: 11px;
+    color: alpha(@window_fg_color, 0.76);
+}
+
+button.icon-button:hover {
+    background: alpha(@window_fg_color, 0.08);
+    color: @window_fg_color;
+}
+
+.aether-search {
+    min-height: 40px;
+    margin: 0 0 5px 0;
+}
+
 .history-row {
     margin: 2px 0;
-    border-radius: 9px;
+    border-radius: 11px;
 }
 
 .history-row button {
-    min-height: 36px;
+    min-height: 39px;
     background: transparent;
+    border-radius: 9px;
 }
 
 .history-row button:hover {
-    background: alpha(@window_fg_color, 0.07);
+    background: alpha(@window_fg_color, 0.08);
 }
 
 .history-row.active-chat {
     background: alpha(@aether_accent, 0.15);
 }
 
-.model-info {
-    background: alpha(@window_fg_color, 0.045);
-    border: 1px solid alpha(@window_fg_color, 0.10);
-    border-radius: 9px;
-    padding: 10px;
-    margin: 3px 0;
-    color: alpha(@window_fg_color, 0.62);
+.history-row.active-chat button:first-child {
+    color: @window_fg_color;
+    font-weight: 700;
+}
+
+.model-info,
+.model-panel {
+    background: alpha(@aether_accent, 0.065);
+    border: 1px solid alpha(@aether_accent, 0.17);
+    border-radius: 12px;
+    padding: 12px;
+    margin: 4px 0;
+    color: alpha(@window_fg_color, 0.69);
     font-size: 11px;
 }
 
 dropdown {
     min-height: 40px;
+    border-radius: 11px;
+}
+
+.connection-status {
+    font-size: 11px;
+    margin: 9px 3px 2px 3px;
+}
+
+.chat-surface {
+    background: @window_bg_color;
+}
+
+.conversation-header {
+    padding: 0 0 13px 0;
+    border-bottom: 1px solid alpha(@window_fg_color, 0.07);
 }
 
 .chat-title {
     color: @window_fg_color;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 19px;
+    font-weight: 750;
+}
+
+.chat-subtitle {
+    color: alpha(@window_fg_color, 0.47);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.0px;
+}
+
+button.stats-pill {
+    min-height: 30px;
+    border: 1px solid alpha(@window_fg_color, 0.10);
+    border-radius: 99px;
+    background: alpha(@window_fg_color, 0.045);
+    font-size: 11px;
+    color: alpha(@window_fg_color, 0.70);
+}
+
+button.header-action {
+    min-height: 31px;
+    padding: 3px 10px;
+    border-radius: 9px;
+    font-size: 11px;
+    color: alpha(@window_fg_color, 0.76);
+}
+
+button.header-action:hover {
+    background: alpha(@window_fg_color, 0.075);
+    color: @window_fg_color;
+}
+
+.conversation-scroll,
+.conversation-content {
+    background: transparent;
 }
 
 .user-message,
 .assistant-message {
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-top: 6px;
-    margin-bottom: 6px;
+    border-radius: 16px;
+    padding: 16px 19px;
+    margin-top: 7px;
+    margin-bottom: 7px;
 }
 
 .user-message {
-    background: alpha(@window_fg_color, 0.085);
-    margin-left: 180px;
+    background: alpha(@aether_accent, 0.13);
+    border: 1px solid alpha(@aether_accent, 0.18);
+    margin-left: 65px;
     margin-right: 0;
 }
 
 .assistant-message {
-    background: alpha(@window_fg_color, 0.035);
+    background: alpha(@window_fg_color, 0.032);
+    border: 1px solid alpha(@window_fg_color, 0.075);
     border-left: 3px solid @aether_accent;
     margin-left: 0;
-    margin-right: 180px;
+    margin-right: 65px;
 }
 
 .message-role {
     color: @aether_accent;
     font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
+    font-weight: 800;
+    letter-spacing: 1.0px;
+}
+
+.user-message .message-role {
+    color: alpha(@window_fg_color, 0.66);
 }
 
 .user-message label,
@@ -121,21 +228,22 @@ dropdown {
 }
 
 .message-actions {
-    margin-top: 2px;
+    margin-top: 4px;
 }
 
 .message-actions button {
-    min-height: 28px;
-    padding: 2px 8px;
+    min-height: 29px;
+    padding: 3px 9px;
+    border-radius: 8px;
     font-size: 11px;
-    color: alpha(@window_fg_color, 0.65);
+    color: alpha(@window_fg_color, 0.66);
 }
 
 .markdown-h1 {
     color: @aether_accent;
     font-size: 20px;
     font-weight: 700;
-    margin-top: 8px;
+    margin-top: 9px;
     margin-bottom: 7px;
 }
 
@@ -156,47 +264,121 @@ dropdown {
 }
 
 .markdown-quote {
-    color: alpha(@window_fg_color, 0.65);
+    color: alpha(@window_fg_color, 0.66);
     font-style: italic;
     border-left: 3px solid @aether_accent;
-    padding-left: 8px;
+    padding-left: 10px;
 }
 
 .code-block {
     background: @view_bg_color;
-    border: 1px solid alpha(@window_fg_color, 0.12);
-    border-radius: 10px;
-    padding: 10px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    border: 1px solid alpha(@window_fg_color, 0.13);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 9px;
+    margin-bottom: 9px;
 }
 
 .code-language {
-    color: alpha(@window_fg_color, 0.58);
+    color: alpha(@window_fg_color, 0.57);
     font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .code-text {
-    background: alpha(@window_fg_color, 0.035);
+    background: alpha(@window_fg_color, 0.045);
     color: @window_fg_color;
-    border-radius: 7px;
-    padding: 11px;
+    border-radius: 8px;
+    padding: 12px;
     font-family: monospace;
     font-size: 12px;
 }
 
-.chat-input {
+.composer {
+    border: 1px solid alpha(@window_fg_color, 0.13);
+    border-radius: 16px;
     background: @view_bg_color;
-    color: @view_fg_color;
-    border: 1px solid alpha(@window_fg_color, 0.14);
-    border-radius: 12px;
-    font-size: 13px;
-    padding: 8px 12px;
+    padding: 5px;
+    margin-top: 3px;
 }
 
-.chat-input:focus {
-    border-color: @aether_accent;
+.composer:focus-within {
+    border-color: alpha(@aether_accent, 0.76);
+}
+
+textview.chat-input,
+textview.chat-input text {
+    background: transparent;
+    color: @view_fg_color;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+textview.chat-input {
+    padding: 0;
+}
+
+.composer button.suggested-action {
+    min-width: 42px;
+    min-height: 42px;
+}
+
+.composer button {
+    min-height: 42px;
+    border-radius: 11px;
+}
+
+.welcome-surface {
+    padding: 38px 18px 48px 18px;
+}
+
+.welcome-mark {
+    min-width: 76px;
+    min-height: 76px;
+    border-radius: 25px;
+    background: alpha(@aether_accent, 0.13);
+    border: 1px solid alpha(@aether_accent, 0.23);
+    color: @aether_accent;
+    margin-bottom: 8px;
+}
+
+.welcome-title {
+    color: @window_fg_color;
+    font-size: 29px;
+    font-weight: 800;
+}
+
+.welcome-description {
+    color: alpha(@window_fg_color, 0.63);
+    font-size: 13px;
+    margin: 2px 0 20px 0;
+}
+
+.welcome-prompts {
+    margin-top: 9px;
+}
+
+button.welcome-prompt {
+    min-width: 295px;
+    min-height: 45px;
+    border-radius: 12px;
+    background: alpha(@window_fg_color, 0.035);
+    color: @window_fg_color;
+    border: 1px solid alpha(@window_fg_color, 0.10);
+    font-size: 12px;
+}
+
+button.welcome-prompt:hover {
+    background: alpha(@aether_accent, 0.10);
+    border-color: alpha(@aether_accent, 0.32);
+}
+
+.welcome-hint {
+    color: alpha(@window_fg_color, 0.45);
+    font-size: 11px;
+    margin-top: 16px;
 }
 
 scrollbar slider {
@@ -205,7 +387,7 @@ scrollbar slider {
 }
 
 scrollbar slider:hover {
-    background: alpha(@window_fg_color, 0.34);
+    background: alpha(@window_fg_color, 0.35);
 }
 
 separator {
@@ -214,25 +396,25 @@ separator {
 }
 
 .dim-label {
-    color: alpha(@window_fg_color, 0.55);
+    color: alpha(@window_fg_color, 0.57);
 }
 
 .welcome {
-    color: alpha(@window_fg_color, 0.58);
+    color: alpha(@window_fg_color, 0.60);
     font-size: 14px;
 }
 
 headerbar {
     background: @headerbar_bg_color;
     color: @headerbar_fg_color;
-    min-height: 42px;
+    min-height: 44px;
     border-bottom: 1px solid alpha(@window_fg_color, 0.08);
 }
 
 headerbar button {
     min-height: 32px;
     min-width: 32px;
-    border-radius: 8px;
+    border-radius: 9px;
 }
 
 headerbar button:hover {
